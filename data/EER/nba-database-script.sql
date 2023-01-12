@@ -178,7 +178,7 @@ CREATE TABLE IF NOT EXISTS `nbaReference`.`PlayerSeasons` (
   `idTeam` INT NULL DEFAULT 0,
   `age` INT NULL DEFAULT 0,
   `league` VARCHAR(45) NULL DEFAULT 'noData',
-  `position` VARCHAR(45) NULL DEFAULT 'noData',
+  `position` VARCHAR(45) NULL,
   `games` INT NULL DEFAULT 0,
   `gamesStarter` INT NULL DEFAULT 0,
   `minutesPlayed` INT NULL DEFAULT 0,
