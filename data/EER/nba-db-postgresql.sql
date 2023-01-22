@@ -10,14 +10,14 @@
 -- SQLINES DEMO *** ------------------------------------
 -- Schema nbaReference
 -- SQLINES DEMO *** ------------------------------------
-DROP SCHEMA IF EXISTS nbareference CASCADE;
+-- DROP SCHEMA IF EXISTS nbareference CASCADE;
 
 -- SQLINES DEMO *** ------------------------------------
 -- Schema nbaReference
 -- SQLINES DEMO *** ------------------------------------
-CREATE SCHEMA IF NOT EXISTS nbareference;
+-- CREATE SCHEMA IF NOT EXISTS nbareference;
 -- SHOW WARNINGS;
-SET SCHEMA 'nbareference' ;
+-- SET SCHEMA 'nbareference' ;
 
 -- SQLINES DEMO *** ------------------------------------
 -- SQLINES DEMO *** ce`.`Players`
@@ -26,16 +26,15 @@ DROP TABLE IF EXISTS Players CASCADE;
 
 -- SHOW WARNINGS;
 -- SQLINES LICENSE FOR EVALUATION USE ONLY
+DROP SEQUENCE Players_seq;
 CREATE SEQUENCE Players_seq;
 
 CREATE TABLE IF NOT EXISTS Players (
   idPlayer INT NOT NULL DEFAULT NEXTVAL ('Players_seq'),
   name VARCHAR(45) NULL DEFAULT 'noData',
   age INT NULL DEFAULT 0,
-  position1 VARCHAR(45) NULL DEFAULT 'noData',
-  position2 VARCHAR(45) NULL DEFAULT 'noData',
-  position3 VARCHAR(45) NULL DEFAULT 'noData',
-  collegue VARCHAR(45) NULL DEFAULT 'noData',
+  position VARCHAR(100) NULL DEFAULT 'noData',
+  college VARCHAR(100) NULL DEFAULT 'noData',
   draftTeam VARCHAR(45) NULL DEFAULT 'noData',
   draftPosition INT NULL DEFAULT 0,
   draftYear INT NULL DEFAULT 0000,
@@ -53,6 +52,7 @@ DROP TABLE IF EXISTS Games CASCADE;
 
 -- SHOW WARNINGS;
 -- SQLINES LICENSE FOR EVALUATION USE ONLY
+DROP SEQUENCE Games_seq;
 CREATE SEQUENCE Games_seq;
 
 CREATE TABLE IF NOT EXISTS Games (
@@ -75,25 +75,27 @@ DROP TABLE IF EXISTS Seasons CASCADE;
 
 -- SHOW WARNINGS;
 -- SQLINES LICENSE FOR EVALUATION USE ONLY
+DROP SEQUENCE Seasons_seq;
 CREATE SEQUENCE Seasons_seq;
 
 CREATE TABLE IF NOT EXISTS Seasons (
   idSeason INT NOT NULL DEFAULT NEXTVAL ('Seasons_seq'),
   years VARCHAR(45) NULL DEFAULT 'noData',
   league VARCHAR(45) NULL DEFAULT 'noData',
-  champion INT NULL DEFAULT 0,
-  mvp INT NULL DEFAULT 0,
-  roty INT NULL DEFAULT 0,
-  pointsLeader INT NULL DEFAULT 0,
-  reboundsLeader INT NULL DEFAULT 0,
-  assistsLeader INT NULL DEFAULT 0,
-  winShareLeader INT NULL DEFAULT 0,
-  pointsMax INT NULL DEFAULT 0,
-  reboundsMax INT NULL DEFAULT 0,
-  assistsMax INT NULL DEFAULT 0,
-  winSharesMax INT NULL DEFAULT 0,
-  PRIMARY KEY (idSeason))
+  champion INT NULL,
+  mvp VARCHAR(45) NULL DEFAULT 0,
+  roty VARCHAR(45) NULL DEFAULT 0,
+  pointsLeader VARCHAR(45) NULL DEFAULT 'noData',
+  reboundsLeader VARCHAR(45) NULL DEFAULT 'noData',
+  assistsLeader VARCHAR(45) NULL DEFAULT 'noData',
+  winSharesLeader VARCHAR(45) NULL DEFAULT 'noData',
+  PRIMARY KEY (idSeason),
+  CONSTRAINT fk_seasons_idteams1 FOREIGN KEY (champion)
+         REFERENCES teams (idteam)
+         ON UPDATE NO ACTION
+         ON DELETE NO ACTION)
 ;
+
 
 -- SHOW WARNINGS;
 
@@ -104,18 +106,19 @@ DROP TABLE IF EXISTS Teams CASCADE;
 
 -- SHOW WARNINGS;
 -- SQLINES LICENSE FOR EVALUATION USE ONLY
+DROP SEQUENCE Teams_seq;
 CREATE SEQUENCE Teams_seq;
 
 CREATE TABLE IF NOT EXISTS Teams (
   idTeam INT NOT NULL DEFAULT NEXTVAL ('Teams_seq'),
   name VARCHAR(45) NULL DEFAULT 'noData',
   location VARCHAR(45) NULL DEFAULT 'noData',
-  games VARCHAR(45) NULL DEFAULT 'noData',
-  wins VARCHAR(45) NULL DEFAULT 'noData',
-  loses VARCHAR(45) NULL DEFAULT 'noData',
-  playoff VARCHAR(45) NULL DEFAULT 'noData',
-  confChampions VARCHAR(45) NULL DEFAULT 'noData',
-  nbaChampions VARCHAR(45) NULL DEFAULT 'noData',
+  games INT NULL DEFAULT 0,
+  wins INT NULL DEFAULT 0,
+  loses INT NULL DEFAULT 0,
+  playoff INT NULL DEFAULT 0,
+  confChampions INT NULL DEFAULT 0,
+  nbaChampions INT NULL DEFAULT 0,
   conference VARCHAR(45) NULL DEFAULT 'noData',
   PRIMARY KEY (idTeam))
 ;
