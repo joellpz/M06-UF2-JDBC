@@ -1,9 +1,12 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 public class ConnectionFactory {
 	// init database constants
@@ -117,7 +120,7 @@ public class ConnectionFactory {
 			}
 		}
 	}
-	
+
 //	public void init() {
 //		Properties prop = new Properties();
 //		InputStream propStream = this.getClass().getClassLoader().getResourceAsStream("db.properties");

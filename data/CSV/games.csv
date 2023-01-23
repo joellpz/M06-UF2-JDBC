@@ -1,5 +1,5 @@
-"Game ID","Date","Visitor","Points Visitor","Local","Points Local","Arena","Link"
-"1","Sat, May 22, 2021","Miami Heat","107","Milwaukee Bucks","109","Fiserv Forum","https://www.basketball-reference.com/boxscores/202105220MIL.html"
+IDGame,Date,Visitor,PointsVisitor,Local,PointsLocal,Arena,"Link"
+"1","Sat, May 22, 2021",Miami Heat,107,"Milwaukee Bucks","109","Fiserv Forum","https://www.basketball-reference.com/boxscores/202105220MIL.html"
 "2","Sat, May 22, 2021","Dallas Mavericks","113","Los Angeles Clippers","103","STAPLES Center","https://www.basketball-reference.com/boxscores/202105220LAC.html"
 "3","Sat, May 22, 2021","Boston Celtics","93","Brooklyn Nets","104","Barclays Center","https://www.basketball-reference.com/boxscores/202105220BRK.html"
 "4","Sat, May 22, 2021","Portland Trail Blazers","123","Denver Nuggets","109","Ball Arena","https://www.basketball-reference.com/boxscores/202105220DEN.html"

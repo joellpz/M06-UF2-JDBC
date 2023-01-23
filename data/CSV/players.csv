@@ -1,8 +1,8 @@
-"Name","Position","College","Draft Team","Draft Position","Birthday","Age","Draft Year","Career Experience"
-"Alaa Abdelnaby","Power Forward","Duke","Portland Trail Blazers","25th pick","1968-06-24","54","1990","5"
+Name,Position,College,DraftTeam,DraftPosition,Born,Age,DraftYear,Experience
+"Alaa Abdelnaby","Power Forward","Duke","Portland Trail Blazers","25th pick","1968-06-24",54,"1990","5"
 "Zaid Abdul-Aziz","Center and Power Forward","Iowa State","Cincinnati Royals","5th pick","1946-04-07","76","1968","10"
 "Kareem Abdul-Jabbar","Center","UCLA","Milwaukee Bucks","1st pick","1947-04-16","75","1969","20"
-"Mahmoud Abdul-Rauf","Point Guard","LSU","Denver Nuggets","3rd pick","1969-03-09","53","1990","9"
+"Mahmoud Abdul-Rauf","Point Guard","LSU","Denver Nuggets","3rd pick","1969-03-09","53",1990,"9"
 "Tariq Abdul-Wahad","Shooting Guard","Michigan, San Jose State","Sacramento Kings","11th pick","1974-11-03","48","1997","6"
 "Shareef Abdur-Rahim","Power Forward, Small Forward, and Center","California","Vancouver Grizzlies","3rd pick","1976-12-11","46","1996","12"
 "Tom Abernethy","Small Forward and Power Forward","Indiana","Los Angeles Lakers","9th pick","1954-05-06","68","1976","5"
