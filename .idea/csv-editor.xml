@@ -38,6 +38,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/data/CSV/teamPerSeason.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/data/CSV/teamPerSeasons.csv">
           <value>
             <Attribute>

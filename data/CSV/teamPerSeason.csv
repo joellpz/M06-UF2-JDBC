@@ -1,6 +1,6 @@
-"Season","Team","Wins","Loses","Win Rate","Games Behind","Points Per Game","Opponents PTSxGame","Team Rating","Conference"
-"2022-23",Boston Celtics,"21","6",".778","none","120.3","112.4","8.27","Eastern"
-"2022-23",Milwaukee Bucks,"19","7",".731","none","112.0","107.5","3.67","Eastern"
+idSeason,idTeam,"Wins","Loses",WinRate,GamesBehind,PtsGame,DefPTSGame,TeamRating,"Conference"
+"2022-23",Boston Celtics,"21","6",".778","none","120.3","112.4",8.27,"Eastern"
+"2022-23",Milwaukee Bucks,"19","7",".731","none",112.0,107.5,"3.67","Eastern"
 "2022-23",Cleveland Cavaliers,"17","10",".630","2.5","110.9","104.8","5.96","Eastern"
 "2022-23",Brooklyn Nets,"16","12",".571","5.5","112.5","111.3","1.29","Eastern"
 "2022-23",Philadelphia 76ers,"14","12",".538","6.5","110.7","108.4","1.81","Eastern"
@@ -1602,3 +1602,4 @@
 "1949-50","Sheboygan Red Skins","22","40",".355","16.0","82.4","87.8","-5.85","none"
 "1949-50","Waterloo Hawks","19","43",".306","19.0","79.4","84.9","-5.96","none"
 "1949-50","Denver Nuggets","11","51",".177","27.0","77.7","89.2","-11.31","none"
+,,,,,,,,,

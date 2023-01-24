@@ -34,7 +34,7 @@ public class OpenCSV {
                                 "Blocks", "Turnovers", "Fouls", "Points", "Triples Dobles"};
                 case "seasons.csv" ->
                         intro = new String[]{"Link", "Years", "League", "Champion", "MVP", "RookieOTY", "Points Leader", "Rebounds Leader", "Assists Leader", "Win Shares Leader"};
-                case "teamPerSeasons.csv" ->
+                case "teamPerSeason.csv" ->
                         intro = new String[]{"Season", "Team", "Wins", "Loses", "Win Rate", "Games Behind", "Points Per Game", "Opponents PTSxGame", "Team Rating", "Conference"};
                 case "teams.csv" ->
                         intro = new String[]{"Name", "Location", "Games", "Wins", "Loses", "Playoff Appearances", "Conference Champions", "NBA Champions", "Conference"};

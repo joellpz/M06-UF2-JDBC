@@ -69,6 +69,7 @@ public class NBAGeneral {
                         case "int4" -> {
                             if (foreignKeys.containsKey(aux) && val==0 && primaryKeys.contains(aux)) {
                                 insertNewLine(aux.substring(2) + "s",dataContained.get(aux));
+                                i--;
                             }else if (val != 0) {
                                 pst.setInt(i, val);
                             } else {
@@ -99,7 +100,7 @@ public class NBAGeneral {
                                 }
                             }
                         }
-                        case "float8" -> {
+                        case "float4" -> {
                             if (dataContained.get(aux.toLowerCase()).equals("none")) pst.setObject(i, null);
                             else {
                                 try {

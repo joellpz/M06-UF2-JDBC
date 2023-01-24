@@ -75,13 +75,15 @@ public class NBAMain {
 				break;
 
 			case 9:
-				nbaGeneral.resetBBDD("data/EER/nba-db-postgresql.sql");
-				nbaGeneral.insertBaseData("data/CSV/players.csv");
-				nbaGeneral.insertBaseData("data/CSV/teams.csv");
-				nbaGeneral.insertBaseData("data/CSV/seasons.csv");
-				nbaGeneral.insertBaseData("data/CSV/games.csv");
+//				nbaGeneral.resetBBDD("data/EER/nba-db-postgresql.sql");
+//				nbaGeneral.insertBaseData("data/CSV/players.csv");
+//				nbaGeneral.insertBaseData("data/CSV/teams.csv");
+//				nbaGeneral.insertBaseData("data/CSV/seasons.csv");
+//				nbaGeneral.insertBaseData("data/CSV/games.csv");
 
-				nbaGeneral.insertBaseData("data/CSV/playerSeasons.csv");
+//				nbaGeneral.insertBaseData("data/CSV/playerSeasons.csv");
+				nbaGeneral.insertBaseData("data/CSV/playerPerGame.csv");
+//				nbaGeneral.insertBaseData("data/CSV/teamPerSeason.csv");
 				// dbaccessor.desassignaArticleARevista(conn);
 				break;
 
