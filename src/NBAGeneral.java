@@ -33,11 +33,16 @@ public class NBAGeneral {
 
         statement = NBAMain.c.createStatement();
         Map<String, String> mapType = getColumnType(table);
-        mapType.forEach((k,v)-> System.out.println(k));
+        //mapType.forEach((k, v) -> System.out.println(k));
         Map<String, String> foreignKeys = getForeignKeys(table);
-        //mapType.keySet().forEach(System.out::println);
+        List <String> primaryKeys = getPrimaryKeys(table);
+        //System.out.println("FK");
+        //foreignKeys.keySet().forEach(System.out::println);
+        //System.out.println("___________");
         for (int i = 0; i < mapType.size(); i++) {
-            sqlBase = sqlBase.concat(mapType.keySet().stream().toList().get(i)) + ",";
+            if (mapType.keySet().stream().toList().get(i).matches("^[0-9].+"))
+                sqlBase = sqlBase.concat("\"" + mapType.keySet().stream().toList().get(i)) + "\",";
+            else sqlBase = sqlBase.concat(mapType.keySet().stream().toList().get(i)) + ",";
             aux = aux.concat("?,");
         }
         sqlBase = sqlBase.substring(0, sqlBase.length() - 1).concat(aux.substring(0, aux.length() - 1).concat(");"));
@@ -56,16 +61,17 @@ public class NBAGeneral {
                 for (int i = 1; i < mapType.keySet().size() + 1; i++) {
                     aux = mapType.keySet().stream().toList().get(i - 1);
                     if (foreignKeys.containsKey(aux)) {
-                        val = makeQueryFK(aux.substring(1) + "s", aux, dataContained.get(aux));
+                        val = makeQueryFK(aux.substring(2) + "s", aux, dataContained.get(aux));
                     }
+                    System.out.println(aux+": "+ dataContained.get(aux.toLowerCase()));
                     switch (mapType.get(aux)) {
                         case "varchar" -> pst.setString(i, dataContained.get(aux.toLowerCase()));
                         case "int4" -> {
-                            if (val != 0) {
+                            if (foreignKeys.containsKey(aux) && val==0 && primaryKeys.contains(aux)) {
+                                insertNewLine(aux.substring(2) + "s",dataContained.get(aux));
+                            }else if (val != 0) {
                                 pst.setInt(i, val);
                             } else {
-                                System.out.println(aux);
-                                System.out.println(dataContained.get(aux.toLowerCase()));
                                 if (dataContained.get(aux.toLowerCase()).replaceAll("[^0-9]", "").equals("")) {
                                     pst.setNull(i, java.sql.Types.INTEGER);
                                 } else if (dataContained.get(aux.toLowerCase()) == null)
@@ -75,27 +81,33 @@ public class NBAGeneral {
                             }
                         }
                         case "date" -> {
-                            if (dataContained.get(aux) == null) {
+                            if (dataContained.get(aux.toLowerCase()) == null) {
                                 pst.setNull(i, Types.DATE);
-                            } else if (dataContained.get(aux).length() == 4) {
-                                pst.setDate(i, Date.valueOf(dataContained.get(aux) + "-01-01"));
+                            } else if (dataContained.get(aux.toLowerCase()).length() == 4) {
+                                pst.setDate(i, Date.valueOf(dataContained.get(aux.toLowerCase()) + "-01-01"));
                             } else {
-                                if (!dataContained.get(aux).matches("\\d+-\\d+-\\d+")) {
+                                if (!dataContained.get(aux.toLowerCase()).matches("\\d+-\\d+-\\d+")) {
                                     try {
-                                        System.out.println("++++++");
                                         pst.setDate(i, Date.valueOf(new SimpleDateFormat("yyyy-MM-dd")
                                                 .format(new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.ENGLISH)
-                                                        .parse(dataContained.get(aux)))));
+                                                        .parse(dataContained.get(aux.toLowerCase())))));
                                     } catch (ParseException e) {
                                         throw new RuntimeException(e);
                                     }
                                 } else {
-                                    pst.setDate(i, Date.valueOf(dataContained.get(aux)));
+                                    pst.setDate(i, Date.valueOf(dataContained.get(aux.toLowerCase())));
                                 }
                             }
                         }
                         case "float8" -> {
-
+                            if (dataContained.get(aux.toLowerCase()).equals("none")) pst.setObject(i, null);
+                            else {
+                                try {
+                                    pst.setObject(i, Float.parseFloat(dataContained.get(aux.toLowerCase())));
+                                } catch (Exception e) {
+                                    System.out.println("ERROR FLOAT*******************++");
+                                }
+                            }
                         }
                     }
                 }
@@ -106,7 +118,7 @@ public class NBAGeneral {
                     System.out.println(pst.toString());
                     System.out.println(e);
                     e.printStackTrace();
-                    System. exit(0);
+                    System.exit(0);
                 }
             }
             /*
@@ -120,6 +132,26 @@ public class NBAGeneral {
         }
 
 
+    }
+
+    private List<String> getPrimaryKeys(String table) {
+        List<String> list = new ArrayList<>();
+        String sql4PK = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME='" + table.toLowerCase() + "' AND CONSTRAINT_NAME LIKE '%_pkey'";
+        /*
+        SELECT COLUMN_NAME, UDT_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='players' AND
+COLUMN_NAME NOT IN (SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE CONSTRAINT_NAME = 'players_pkey')
+        * */
+        try {
+            ResultSet rs = statement.executeQuery(sql4PK);
+            while (rs.next()) {
+                list.add(rs.getString(1));
+                //System.out.println(rs.getString(1));
+            }
+            rs.close();
+        } catch (SQLException e) {
+            System.out.println("ERROR =" + sql4PK);
+        }
+        return list;
     }
 
     public Map<String, String> getColumnType(String table) {
@@ -158,12 +190,11 @@ COLUMN_NAME NOT IN (SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
 
     public Map<String, String> getForeignKeys(String table) {
         Map<String, String> foreignKeys = new HashMap<>();
-        String sql4FK = "SELECT COLUMN_NAME, CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME='" + table + "' AND CONSTRAINT_NAME LIKE '%_fkey'";
+        String sql4FK = "SELECT COLUMN_NAME, CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME='" + table.toLowerCase() + "' AND CONSTRAINT_NAME LIKE '%_fkey'";
         try {
             ResultSet rs = statement.executeQuery(sql4FK);
             while (rs.next()) {
                 foreignKeys.put(rs.getString(1), rs.getString(2));
-                //System.out.println(rs.getString(1));
             }
             rs.close();
         } catch (SQLException e) {
@@ -177,7 +208,12 @@ COLUMN_NAME NOT IN (SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
     public int makeQueryFK(String table, String column, String valueToFind) {
         int id = 0;
         //System.out.println(table+valueToFind+"*******************+");
-        if (column.equals("local") || column.equals("visitor") || column.equals("champion")) column = "idTeam"; table ="teams";
+        if (column.equals("local") || column.equals("visitor") || column.equals("champion")){
+            column = "idTeam";
+            table = "teams";
+        }
+
+        System.out.println(column +": "+ table);
         try {
             String sql1 = "SELECT column_name FROM information_schema.columns WHERE table_name = '" + table + "' ORDER BY ordinal_position LIMIT 1 OFFSET 1";
             ResultSet rs1 = statement.executeQuery(sql1);
@@ -190,7 +226,7 @@ COLUMN_NAME NOT IN (SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
             ResultSet rs = statement.executeQuery(sql);
             while (rs.next()) {
                 id = Integer.parseInt(rs.getString(1));
-                System.out.println(id + ": " + valueToFind);
+                //System.out.println(id + ": " + valueToFind);
             }
             rs.close();
         } catch (SQLException e) {
@@ -198,5 +234,23 @@ COLUMN_NAME NOT IN (SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
             System.out.println(e);
         }
         return id;
+    }
+
+    private void insertNewLine(String table, String data) {
+        try {
+            String sql1 = "SELECT column_name FROM information_schema.columns WHERE table_name = '" + table + "' ORDER BY ordinal_position LIMIT 1 OFFSET 1";
+            ResultSet rs1 = statement.executeQuery(sql1);
+            String sql = "";
+            while (rs1.next()) {
+                sql = "INSERT INTO " + table + "("+rs1.getString(1)+") VALUES ('" + data + "')";
+            }
+            //System.out.println("FK CONSULTA: " + sql);
+
+            System.out.println(statement.execute(sql));
+            rs1.close();
+        } catch (SQLException e) {
+            System.out.println("ERROR = MAKE QUERY FK");
+            System.out.println(e);
+        }
     }
 }

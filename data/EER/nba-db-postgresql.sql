@@ -158,7 +158,7 @@ turnovers INT NULL,
 fouls INT NULL,
 points INT NULL,
 triplesDouble INT NULL,
-PRIMARY KEY (idPlayer, idSeason),
+PRIMARY KEY (idPlayer, idSeason, idTeam),
 FOREIGN KEY (idPlayer) REFERENCES Players (idPlayer) ON DELETE NO ACTION ON UPDATE NO ACTION,
 FOREIGN KEY (idSeason) REFERENCES Seasons (idSeason) ON DELETE NO ACTION ON UPDATE NO ACTION,
 FOREIGN KEY (idTeam) REFERENCES Teams (idTeam) ON DELETE NO ACTION ON UPDATE NO ACTION
