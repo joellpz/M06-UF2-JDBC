@@ -1,17 +1,14 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.stream.Collectors;
 
 public class NBAMain {
 
 	public static Connection c;
-	public static void main(String[] args) throws IOException, SQLException, ParseException {
+	public static void main(String[] args) throws IOException, SQLException {
 		NBAMenu menu = new NBAMenu();
 		NBAGeneral nbaGeneral = new NBAGeneral();
 		
@@ -75,16 +72,15 @@ public class NBAMain {
 				break;
 
 			case 9:
-//				nbaGeneral.resetBBDD("data/EER/nba-db-postgresql.sql");
-//				nbaGeneral.insertBaseData("data/CSV/players.csv");
-//				nbaGeneral.insertBaseData("data/CSV/teams.csv");
-//				nbaGeneral.insertBaseData("data/CSV/seasons.csv");
-//				nbaGeneral.insertBaseData("data/CSV/games.csv");
+				nbaGeneral.resetBBDD("data/EER/nba-db-postgresql.sql");
+				nbaGeneral.insertBaseData("data/CSV/players.csv");
+				nbaGeneral.insertBaseData("data/CSV/teams.csv");
+				nbaGeneral.insertBaseData("data/CSV/seasons.csv");
+				nbaGeneral.insertBaseData("data/CSV/games.csv");
 
-//				nbaGeneral.insertBaseData("data/CSV/playerSeasons.csv");
+				nbaGeneral.insertBaseData("data/CSV/playerSeasons.csv");
 				nbaGeneral.insertBaseData("data/CSV/playerPerGame.csv");
-//				nbaGeneral.insertBaseData("data/CSV/teamPerSeason.csv");
-				// dbaccessor.desassignaArticleARevista(conn);
+				nbaGeneral.insertBaseData("data/CSV/teamPerSeason.csv");
 				break;
 
 			case 10:
