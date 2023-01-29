@@ -281,19 +281,19 @@
 ////	  else System.out.println("Operació cancel·lada"); } while (rs.next()); } }
 ////	  catch (Exception e) { e.printStackTrace(); } }
 ////
-////	public void mostraAutors() throws SQLException, IOException {
-////		Statement st = conn.createStatement();
-////		Scanner reader = new Scanner(System.in);
-////		ResultSet rs;
-////
-////		rs = st.executeQuery("SELECT * FROM autors");
-////		while (rs.next())
-////			System.out.println("ID: " + rs.getString("id_autor") + "\tNom: " + rs.getString("nom") + "\tAny Naixement: "
-////					+ rs.getString("any_naixement") + "\tNacionalitat: " + rs.getString("nacionalitat") + "\tActiu: "
-////					+ rs.getString("actiu"));
-////		rs.close();
-////		st.close();
-////	}
+//	public void mostraAutors() throws SQLException, IOException {
+//		Statement st = conn.createStatement();
+//		Scanner reader = new Scanner(System.in);
+//		ResultSet rs;
+//
+//		rs = st.executeQuery("SELECT * FROM autors");
+//		while (rs.next())
+//			System.out.println("ID: " + rs.getString("id_autor") + "\tNom: " + rs.getString("nom") + "\tAny Naixement: "
+//					+ rs.getString("any_naixement") + "\tNacionalitat: " + rs.getString("nacionalitat") + "\tActiu: "
+//					+ rs.getString("actiu"));
+//		rs.close();
+//		st.close();
+//	}
 ////
 ////	public void mostraRevistes() throws SQLException, IOException {
 ////		Statement st = conn.createStatement();

@@ -16,8 +16,8 @@ public class NBAMenu {
 
 			System.out.println(" \nMENU PRINCIPAL \n");
 
-			System.out.println("1. Mostra equips");
-			System.out.println("2. Mostra jugadors d'un determinat equip");
+			System.out.println("1. Mostrar información de alguna tabla");
+			System.out.println("2. Mostrar todas las temporadas de un jugador");
 			System.out.println("3. Crea Equip");
 			System.out.println("4. Crea Jugador");
 			System.out.println("5. Crea Partit");
@@ -25,8 +25,8 @@ public class NBAMenu {
 			System.out.println("7. Assigna jugador a un equip");
 			System.out.println("8. Desvincula jugador d'un equip");
 			System.out.println("9. Borrar y Generar Tablas.");
-			System.out.println("10. Sortir");
-			System.out.println("Esculli opció: ");
+			System.out.println("10. Salir");
+			System.out.println("Escoger opción: ");
 			try {
 				option = Integer.parseInt(br.readLine());
 			} catch (NumberFormatException | IOException e) {

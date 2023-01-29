@@ -13,6 +13,10 @@ public class NBAGeneral {
     PreparedStatement pst;
     Statement statement;
 
+    /**
+     * Permite reiniciar la BBDD determinada ejecutando desde 0 un Scirpt SQL.
+     * @param path URI SQL Script
+     */
     public void resetBBDD(String path) throws IOException, SQLException {
         System.out.println("*** Reiniciando BBDD ***");
         statement = NBAMain.c.createStatement();
@@ -23,6 +27,10 @@ public class NBAGeneral {
         System.out.println("*** Done! ***");
     }
 
+    /**
+     * Funcion que introduce los datos de un CSV a la base de datos. Los archivos deben tener el nombre de las columnas en la parte superior.
+     * @param path CSV with data
+     */
     public void insertBaseData(String path) throws SQLException {
         List<String[]> dataList = OpenCSV.readCSV(path);
         ArrayList<String> dataContainedType = new ArrayList<>();
@@ -117,19 +125,12 @@ public class NBAGeneral {
                         }
                     }
                 }
-
                 try {
                     pst.execute();
                 } catch (SQLException e) {
                     System.out.println(e);
                 }
             }
-            /*
-             INSERT INTO players (college,draftposition,born,name,
-					draftyear,draftteam,position,experience,age)
-					VALUES ('DUKE',25,'1968-06-24','Alaa Abdelnaby',
-							1990,'Portland Trail Blazers','Power Forward',5,54)
-            */
             first = false;
             dataContained.clear();
         }
@@ -137,6 +138,11 @@ public class NBAGeneral {
         System.out.println("*** Done! ***");
     }
 
+    /**
+     *  Funciona que recoge las Primary Keys de la Tabla indicada.
+     * @param table Nombre de la Tabla
+     * @return
+     */
     private List<String> getPrimaryKeys(String table) {
         List<String> list = new ArrayList<>();
         String sql4PK = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME='" + table.toLowerCase() + "' AND CONSTRAINT_NAME LIKE '%_pkey'";
@@ -152,6 +158,11 @@ public class NBAGeneral {
         return list;
     }
 
+    /**
+     * Recoge el nombre de la columna juntamente con el tipo de dato que tiene que introducir.
+     * @param table Tabla
+     * @return Map <Columna, Tipo de Dato>
+     */
     public Map<String, String> getColumnType(String table) {
         Map<String, String> mapType = new HashMap<>();
         table = table.toLowerCase();
@@ -178,6 +189,11 @@ public class NBAGeneral {
         return mapType;
     }
 
+    /**
+     * Enumera las foreign keys de la tabla definida, y las obtiene juntamente con su nombre de Contraint.
+     * @param table Tabla
+     * @return Map <Nombre de Columna,Noombre de la Constraint>
+     */
     public Map<String, String> getForeignKeys(String table) {
         Map<String, String> foreignKeys = new HashMap<>();
         String sql4FK = "SELECT COLUMN_NAME, CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME='" + table.toLowerCase() + "' AND CONSTRAINT_NAME LIKE '%_fkey'";
@@ -193,6 +209,14 @@ public class NBAGeneral {
         return foreignKeys;
     }
 
+    /**
+     * Realiza la consulta para recoger y relacionar los atributos que son ForeignKeys.
+     * Assignando el id correcto según el valor a buscar.
+     * @param table Tabla en la que buscar.
+     * @param column Columna que queremos recoger.
+     * @param valueToFind Valor a buscar.
+     * @return
+     */
     public int makeQueryFK(String table, String column, String valueToFind) {
         if (column.equals("local") || column.equals("visitor") || column.equals("champion")) {
             column = "idTeam";
@@ -211,11 +235,19 @@ public class NBAGeneral {
             }
             rs.close();
         } catch (SQLException e) {
-            System.out.println("ERROR QUERY FK: "+e);
+            System.out.println("ERROR QUERY FK: " + e);
         }
         return 0;
     }
 
+    /**
+     * Inserta en la tabla indicada un campo en la 2nda columna de la misma,
+     * como solución a no haber recogido la información de todos los jugadores
+     * y equipos durante el WebScrapping.
+     *
+     * @param table Table Name
+     * @param data Info TO INSERT
+     */
     private void insertNewLine(String table, String data) {
         System.out.println("*** " + data + " no encontrado en '" + table + "', insertando... *** ");
         try {
@@ -229,7 +261,7 @@ public class NBAGeneral {
             statement.execute(sql);
             rs1.close();
         } catch (SQLException e) {
-            System.out.println("ERROR QUERY INSERT: "+e);
+            System.out.println("ERROR QUERY INSERT: " + e);
         }
     }
 }

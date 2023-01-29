@@ -17,6 +17,7 @@ public class NBAMain {
 
 		TeamController teamController = new TeamController(c);
 		PlayerController playerController = new PlayerController(c);
+		NBAController nbaController = new NBAController(c);
 		PreparedStatement preparedStatement;
 		Statement st = c.createStatement();
 
@@ -39,7 +40,7 @@ public class NBAMain {
 		while (option > 0 && option < 12) {
 			switch (option) {
 			case 1:
-				teamController.showTeams();
+				nbaController.showTable();
 				// dbaccessor.mostraAutors();
 				break;
 
@@ -102,3 +103,21 @@ public class NBAMain {
 	}
 
 }
+
+//TO DO Definir el esquema de la base de datos.
+//TO DO Creación de una base de datos. (Esta opción puede realizarse directamente en PostgreSQL). El resto de opciones deberían realizarse mediante un menú de terminal específicamente creado para nuestra práctica.
+//TO DO Definir las sentencias de creación de las tablas que guardarán la información. El proyecto deberá incluir un archivo schema.sql con las sentencias de creación de la base de datos.
+//TO DO Conexión mediante JDBC con la base de datos.
+//TODO Manejo de la conexión mediante un menú de terminal que debe tener:
+//TO DO 		Una opción que permita borrar las tablas de la base de datos y su información.
+//TO DO 		Una opción que permita crear las tablas de la base de datos.
+//TO DO 		Una opción que permita poblar masivamente las tablas de la base de datos leyendo los ficheros generados en la primera práctica.
+//TODO 		Diferentes opciones de consulta sobre la información. Ejemplos:
+//TODO 			Seleccionar todos los elementos que contengan un texto concreto.
+//TODO 			Seleccionar todos los elementos que cumplan una condición.
+//TODO 			Seleccionar elementos concretos.
+//TODO 		Posibilidad de modificar un registro concreto de información. Ejemplo:
+//TODO 			Seleccionar un elemento concreto y permitir su modificación.
+//TODO 		Posibilidad de modificar diferentes registros de información.
+//TODO 		Posibilidad de eliminar un registro concreto de información.
+//TODO 		Posibilidad de eliminar un conjunto de registros de información que cumplan un condición.
