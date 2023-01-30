@@ -17,7 +17,7 @@ public class NBAMenu {
 			System.out.println(" \nMENU PRINCIPAL \n");
 
 			System.out.println("1. Mostrar información de alguna tabla");
-			System.out.println("2. Mostrar todas las temporadas de un jugador");
+			System.out.println("2. Mostrar información sobre un jugador");
 			System.out.println("3. Crea Equip");
 			System.out.println("4. Crea Jugador");
 			System.out.println("5. Crea Partit");

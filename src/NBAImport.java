@@ -9,15 +9,39 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class NBAGeneral {
+public class NBAImport {
     PreparedStatement pst;
     Statement statement;
 
+    public NBAImport() {
+    }
+
+    /**
+     * Metodo para reconstruir la Base de Datos.
+     */
+    public void resetDataBase() throws SQLException, IOException {
+        executeSQLScript("data/EER/nba-db-postgresql.sql");
+        Scanner sc = new Scanner(System.in);
+        System.out.println("*** ¿Quieres Importar los datos de los CSV (S/N)? ***");
+        if (sc.nextLine().toLowerCase().equals("s")) {
+            importData("data/CSV/players.csv");
+            importData("data/CSV/teams.csv");
+            importData("data/CSV/seasons.csv");
+            importData("data/CSV/games.csv");
+
+            importData("data/CSV/playerSeasons.csv");
+            importData("data/CSV/playerPerGame.csv");
+            importData("data/CSV/teamPerSeason.csv");
+        }
+
+    }
+
     /**
      * Permite reiniciar la BBDD determinada ejecutando desde 0 un Scirpt SQL.
+     *
      * @param path URI SQL Script
      */
-    public void resetBBDD(String path) throws IOException, SQLException {
+    public void executeSQLScript(String path) throws SQLException, IOException {
         System.out.println("*** Reiniciando BBDD ***");
         statement = NBAMain.c.createStatement();
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
@@ -29,9 +53,10 @@ public class NBAGeneral {
 
     /**
      * Funcion que introduce los datos de un CSV a la base de datos. Los archivos deben tener el nombre de las columnas en la parte superior.
+     *
      * @param path CSV with data
      */
-    public void insertBaseData(String path) throws SQLException {
+    public void importData(String path) throws SQLException {
         List<String[]> dataList = OpenCSV.readCSV(path);
         ArrayList<String> dataContainedType = new ArrayList<>();
         Map<String, String> dataContained = new HashMap<>();
@@ -45,7 +70,7 @@ public class NBAGeneral {
 
         statement = NBAMain.c.createStatement();
         Map<String, String> mapType = getColumnType(table);
-        Map<String, String> foreignKeys = getForeignKeys(table);
+        List<String> foreignKeys = getForeignKeys(table);
         foreignKeys.remove("idgame");
         List<String> primaryKeys = getPrimaryKeys(table);
 
@@ -70,13 +95,13 @@ public class NBAGeneral {
                 for (int i = 1; i < mapType.keySet().size() + 1; i++) {
                     aux = mapType.keySet().stream().toList().get(i - 1);
                     val = 0;
-                    if (foreignKeys.containsKey(aux)) {
+                    if (foreignKeys.contains(aux)) {
                         val = makeQueryFK(aux.substring(2) + "s", aux, dataContained.get(aux));
                     }
                     switch (mapType.get(aux)) {
                         case "varchar" -> pst.setString(i, dataContained.get(aux.toLowerCase()));
                         case "int4" -> {
-                            if (foreignKeys.containsKey(aux) && val == 0 && primaryKeys.contains(aux)) {
+                            if (foreignKeys.contains(aux) && val == 0 && primaryKeys.contains(aux)) {
                                 insertNewLine(aux.substring(2) + "s", dataContained.get(aux));
                                 i--;
                             } else if (val != 0) {
@@ -139,7 +164,8 @@ public class NBAGeneral {
     }
 
     /**
-     *  Funciona que recoge las Primary Keys de la Tabla indicada.
+     * Funciona que recoge las Primary Keys de la Tabla indicada.
+     *
      * @param table Nombre de la Tabla
      * @return
      */
@@ -160,6 +186,7 @@ public class NBAGeneral {
 
     /**
      * Recoge el nombre de la columna juntamente con el tipo de dato que tiene que introducir.
+     *
      * @param table Tabla
      * @return Map <Columna, Tipo de Dato>
      */
@@ -191,20 +218,21 @@ public class NBAGeneral {
 
     /**
      * Enumera las foreign keys de la tabla definida, y las obtiene juntamente con su nombre de Contraint.
+     *
      * @param table Tabla
      * @return Map <Nombre de Columna,Noombre de la Constraint>
      */
-    public Map<String, String> getForeignKeys(String table) {
-        Map<String, String> foreignKeys = new HashMap<>();
-        String sql4FK = "SELECT COLUMN_NAME, CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME='" + table.toLowerCase() + "' AND CONSTRAINT_NAME LIKE '%_fkey'";
+    public List<String> getForeignKeys(String table) throws SQLException {
+        List<String> foreignKeys = new ArrayList<>();
+        String sql4FK = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME='" + table.toLowerCase() + "' AND CONSTRAINT_NAME LIKE '%_fkey'";
         try {
             ResultSet rs = statement.executeQuery(sql4FK);
             while (rs.next()) {
-                foreignKeys.put(rs.getString(1), rs.getString(2));
+                foreignKeys.add(rs.getString(1));
             }
             rs.close();
         } catch (SQLException e) {
-            System.out.println("ERROR GET FKEYS :" + e);
+            System.out.println("ERROR GETTING FKEYS :" + e);
         }
         return foreignKeys;
     }
@@ -212,8 +240,9 @@ public class NBAGeneral {
     /**
      * Realiza la consulta para recoger y relacionar los atributos que son ForeignKeys.
      * Assignando el id correcto según el valor a buscar.
-     * @param table Tabla en la que buscar.
-     * @param column Columna que queremos recoger.
+     *
+     * @param table       Tabla en la que buscar.
+     * @param column      Columna que queremos recoger.
      * @param valueToFind Valor a buscar.
      * @return
      */
@@ -246,7 +275,7 @@ public class NBAGeneral {
      * y equipos durante el WebScrapping.
      *
      * @param table Table Name
-     * @param data Info TO INSERT
+     * @param data  Info TO INSERT
      */
     private void insertNewLine(String table, String data) {
         System.out.println("*** " + data + " no encontrado en '" + table + "', insertando... *** ");
