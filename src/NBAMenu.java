@@ -18,10 +18,10 @@ public class NBAMenu {
 
 			System.out.println("1. Mostrar información de alguna tabla");
 			System.out.println("2. Mostrar información sobre un jugador");
-			System.out.println("3. Crea Equip");
-			System.out.println("4. Crea Jugador");
-			System.out.println("5. Crea Partit");
-			System.out.println("6. Mostra jugadors a un equip");
+			System.out.println("3. Crear Equipo");
+			System.out.println("4. Crear Jugador");
+			System.out.println("5. Crear Partido");
+			System.out.println("6. Crear Temporada");
 			System.out.println("7. Assigna jugador a un equip");
 			System.out.println("8. Desvincula jugador d'un equip");
 			System.out.println("9. Borrar y Generar Tablas.");

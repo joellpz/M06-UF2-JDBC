@@ -1,6 +1,6 @@
-import Controllers.NBAController;
-import Controllers.PlayerController;
-import Controllers.TeamController;
+
+
+import Controllers.*;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -20,6 +20,8 @@ public class NBAMain {
 
 		TeamController teamController = new TeamController(c);
 		PlayerController playerController = new PlayerController(c);
+		SeasonController seasonController = new SeasonController(c);
+		GameController gameController = new GameController(c);
 		NBAController nbaController = new NBAController(c);
 		PreparedStatement preparedStatement;
 		Statement st = c.createStatement();
@@ -51,22 +53,22 @@ public class NBAMain {
 				break;
 
 			case 3:
-				nbaController.insertNewData("teams");
+				teamController.newTeam();
 				// dbaccessor.mostraRevistesArticlesAutors();
 				break;
 
 			case 4:
-				nbaController.insertNewData("players");
+				playerController.newPlayer();
 				// dbaccessor.altaAutor();
 				break;
 
 			case 5:
-				nbaController.insertNewData("seasons");
+				gameController.newGame();
 				// dbaccessor.altaRevista();
 				break;
 
 			case 6:
-				nbaController.insertNewData("games");
+				seasonController.newSeason();
 				// dbaccessor.altaArticle();
 				break;
 
