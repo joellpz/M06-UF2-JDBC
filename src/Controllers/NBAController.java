@@ -1,6 +1,7 @@
 package Controllers;
 
 import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 
 public class NBAController {
@@ -58,7 +59,7 @@ public class NBAController {
         while (rs.next()) {
             for (String column : columns) {
                 if (fk.contains(column)) {
-                    System.out.print(column + ": " + getFKValue(column.substring(2) + "s", column, rs.getString(column)) + " | ");
+                    System.out.print(column + ": " + getFKValue(column.substring(2) + "s", column, rs.getString(column), 2, 2) + " | ");
                 } else {
                     System.out.print(column + ": " + rs.getString(column) + " | ");
                 }
@@ -69,21 +70,18 @@ public class NBAController {
         rs.close();
     }
 
-    public String getFKValue(String table, String column, String valueToFind) throws SQLException {
+    public String getFKValue(String table, String column, String valueToFind, int colPosToCompare, int colToGet) throws SQLException {
         Statement st = conn.createStatement();
         if (column.equals("local") || column.equals("visitor") || column.equals("champion")) {
             table = "teams";
         }
         try {
-            String sql1 = "SELECT column_name FROM information_schema.columns WHERE table_name = '" + table + "' ORDER BY ordinal_position LIMIT 1 OFFSET 0";
-            ResultSet rs1 = st.executeQuery(sql1);
-            String sql = "";
-            while (rs1.next()) {
-                sql = "SELECT * FROM " + table + " WHERE " + rs1.getString(1) + " = '" + valueToFind + "'";
-            }
+
+            String sql = "SELECT * FROM " + table + " WHERE " + getSecondColName(table, column, colPosToCompare).get(0) + " = '" + valueToFind + "'";
+
             ResultSet rs = st.executeQuery(sql);
             while (rs.next()) {
-                return rs.getString(2);
+                return rs.getString(colToGet);
             }
             rs.close();
         } catch (SQLException e) {
@@ -91,6 +89,21 @@ public class NBAController {
         }
         st.close();
         return null;
+    }
+
+    private List<String> getSecondColName(String table, String column, int colPosToCompare) throws SQLException {
+        List<String> val = new ArrayList<>();
+        if (column.equals("local") || column.equals("visitor") || column.equals("champion")) {
+            table = "teams";
+        }
+        Statement st = conn.createStatement();
+        String sql1 = "SELECT column_name FROM information_schema.columns WHERE table_name = '" + table + "' ORDER BY ordinal_position LIMIT 1 OFFSET " + (colPosToCompare - 1);
+        ResultSet rs = st.executeQuery(sql1);
+        while (rs.next()) {
+            val.add(rs.getString(1));
+        }
+        val.add(table);
+        return val;
     }
 
     public List<String> getColumnsName(String table) throws SQLException {
@@ -138,7 +151,70 @@ public class NBAController {
         return foreignKeys;
     }
 
-    public void insertData(String table){
+    public void insertNewData(String table) throws SQLException {
+        Statement st = conn.createStatement(
+                ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_UPDATABLE
+        );
 
+        List<String> fk = getForeignKeys(table);
+        String column;
+        boolean rep;
+        System.out.println("*** Introduce la siguiente información. ***");
+
+        String sqlBase = "SELECT * FROM " + table; //+ table;
+        ResultSet rs = st.executeQuery(sqlBase);
+        ResultSetMetaData rsmd = rs.getMetaData();
+        rs.moveToInsertRow();
+        for (int i = 2; i <= rsmd.getColumnCount(); i++) {
+            column = rsmd.getColumnName(i);
+
+            System.out.print(column);
+            switch (rsmd.getColumnType(i)) {
+                case Types.INTEGER -> {
+                    do {
+
+                        rep = false;
+                        if (fk.contains(column) && !column.equals("idgame")) {
+                            List<String> val = getSecondColName(table, column, 2);
+                            System.out.print(" es una Foreign Key, introduce " + val.get(0) + " de la tabla " + val.get(1) + ": ");
+                            String value = sc.nextLine();
+                            rs.updateInt(column, Integer.parseInt(getFKValue(table, column, value, 2, 1)));
+                        } else {
+                            System.out.print(" (integer): ");
+                            try {
+                                rs.updateInt(column, sc.nextInt());
+                            } catch (Exception e) {
+                                System.out.println("*** ERROR, introduce un número ***");
+                                rep = true;
+                            }
+                            sc.nextLine();
+                        }
+
+                    } while (rep);
+
+
+                }
+                case Types.FLOAT -> {
+                    System.out.print(" (float): ");
+                    rs.updateFloat(column, sc.nextFloat());
+                    sc.nextLine();
+                }
+                case Types.DATE -> {
+                    System.out.print(" (date yyyy-mm-dd): ");
+                    rs.updateDate(column, Date.valueOf(sc.nextLine()));
+                }
+                case Types.VARCHAR -> {
+                    System.out.print(" (varchar): ");
+                    rs.updateString(column, sc.nextLine());
+                }
+                default -> {
+                }
+            }
+
+        }
+        rs.insertRow();
+        rs.close();
+        st.close();
     }
 }

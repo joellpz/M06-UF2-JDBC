@@ -16,4 +16,8 @@ public class SeasonController {
     public void showSeasons() throws SQLException, IOException {
         nbaController.showTable("seasons");
     }
+
+    public void newSeason() throws SQLException {
+        nbaController.insertNewData("seasons");
+    }
 }

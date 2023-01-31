@@ -51,18 +51,22 @@ public class NBAMain {
 				break;
 
 			case 3:
+				nbaController.insertNewData("teams");
 				// dbaccessor.mostraRevistesArticlesAutors();
 				break;
 
 			case 4:
+				nbaController.insertNewData("players");
 				// dbaccessor.altaAutor();
 				break;
 
 			case 5:
+				nbaController.insertNewData("seasons");
 				// dbaccessor.altaRevista();
 				break;
 
 			case 6:
+				nbaController.insertNewData("games");
 				// dbaccessor.altaArticle();
 				break;
 

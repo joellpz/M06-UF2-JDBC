@@ -16,4 +16,8 @@ public class GameController {
     public void showGames() throws SQLException, IOException {
         nbaController.showTable("games");
     }
+
+    public void newGame() throws SQLException {
+        nbaController.insertNewData("games");
+    }
 }

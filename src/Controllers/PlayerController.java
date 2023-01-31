@@ -16,8 +16,8 @@ public class PlayerController {
 	List<String> columns;
 	
 	public PlayerController(Connection c) throws SQLException {
-		this.connection = connection;
-		this.nbaController = new NBAController(this.connection);
+		this.connection = c;
+		this.nbaController = new NBAController(connection);
 		columns = nbaController.getColumnsName(table);
 	}
 
@@ -26,17 +26,7 @@ public class PlayerController {
 	}
 
 	public void newPlayer() throws SQLException {
-		System.out.println("*** Introduce la siguiente información. ***");
-		String sqlBase = "INSERT INTO " + table + "(";
-		String aux = ") VALUES (";
-		for (String column: columns) {
-			sqlBase.concat("\""+column+"\",");
-			aux = aux.concat("?,");
-		}
-		sqlBase = sqlBase.substring(0, sqlBase.length() - 1).concat(aux.substring(0, aux.length() - 1).concat(");"));
-		PreparedStatement pst = connection.prepareStatement(sqlBase);
-
-
+		nbaController.insertNewData("players");
 	}
 	public void updatePlayer(){
 

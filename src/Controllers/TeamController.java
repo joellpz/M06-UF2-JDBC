@@ -20,4 +20,8 @@ public class TeamController {
 		nbaController.showTable("teams");
 	}
 
+	public void newTeam() throws SQLException {
+		nbaController.insertNewData("teams");
+	}
+
 }
