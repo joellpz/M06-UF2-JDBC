@@ -156,16 +156,24 @@ public class NBAController {
                 ResultSet.TYPE_SCROLL_SENSITIVE,
                 ResultSet.CONCUR_UPDATABLE
         );
-
-        List<String> fk = getForeignKeys(table);
-        String column;
-        boolean rep;
-        System.out.println("*** Introduce la siguiente información. ***");
-
         String sqlBase = "SELECT * FROM " + table; //+ table;
         ResultSet rs = st.executeQuery(sqlBase);
-        ResultSetMetaData rsmd = rs.getMetaData();
         rs.moveToInsertRow();
+
+        newData(table, rs);
+
+        rs.insertRow();
+        //rs.updateRow();
+        rs.close();
+        st.close();
+    }
+
+    private void newData(String table, ResultSet rs) throws SQLException {
+        List<String> fk = getForeignKeys(table);
+        ResultSetMetaData rsmd = rs.getMetaData();
+        boolean rep;
+        String column;
+        System.out.println("*** Introduce la siguiente información. ***");
         for (int i = 2; i <= rsmd.getColumnCount(); i++) {
             column = rsmd.getColumnName(i);
 
@@ -173,7 +181,6 @@ public class NBAController {
             switch (rsmd.getColumnType(i)) {
                 case Types.INTEGER -> {
                     do {
-
                         rep = false;
                         if (fk.contains(column) && !column.equals("idgame")) {
                             List<String> val = getSecondColName(table, column, 2);
@@ -208,13 +215,8 @@ public class NBAController {
                     System.out.print(" (varchar): ");
                     rs.updateString(column, sc.nextLine());
                 }
-                default -> {
-                }
             }
 
         }
-        rs.insertRow();
-        rs.close();
-        st.close();
     }
 }
