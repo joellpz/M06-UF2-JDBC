@@ -53,22 +53,25 @@ public class NBAMain {
 				break;
 
 			case 3:
-				teamController.newTeam();
+				switch (menu.insertMenu()) {
+					case 1 -> playerController.newPlayer();
+					case 2 -> teamController.newTeam();
+					case 3 -> seasonController.newSeason();
+					case 4 -> gameController.newGame();
+				}
+
 				// dbaccessor.mostraRevistesArticlesAutors();
 				break;
 
 			case 4:
-				playerController.newPlayer();
 				// dbaccessor.altaAutor();
 				break;
 
 			case 5:
-				gameController.newGame();
 				// dbaccessor.altaRevista();
 				break;
 
 			case 6:
-				seasonController.newSeason();
 				// dbaccessor.altaArticle();
 				break;
 
