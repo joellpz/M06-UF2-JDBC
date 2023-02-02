@@ -36,7 +36,11 @@ public class NBAMain {
 		PlayerController playerController = new PlayerController(c);
 		SeasonController seasonController = new SeasonController(c);
 		GameController gameController = new GameController(c);
+		PlayerPerGameController pgameController = new PlayerPerGameController(c);
+		PlayerPerSesonController pseasonController = new PlayerPerSesonController(c);
+		TeamPerSeasonController tseasonController = new TeamPerSeasonController(c);
 		NBAController nbaController = new NBAController(c);
+
 		PreparedStatement preparedStatement;
 		Statement st = c.createStatement();
 
@@ -59,45 +63,62 @@ public class NBAMain {
 		while (option > 0 && option < 12) {
 			switch (option) {
 			case 1:
-				nbaController.ask4Table();
+				switch (menu.dataMenu()) {
+					case 1 -> playerController.showPlayers();
+					case 2 -> teamController.showTeams();
+					case 3 -> seasonController.showSeasons();
+					case 4 -> gameController.showGames();
+					case 5 -> tseasonController.showTeamPerSeason();
+					case 6 -> pseasonController.showPlayerSeasons();
+					case 7 -> pgameController.showPlayerPerGames();
+				}
 				break;
 
 			case 2:
-				nbaController.showDataPerPlayer();
-				break;
-
-			case 3:
 				//Insert Data
 				switch (menu.dataMenu()) {
 					case 1 -> playerController.newPlayer();
 					case 2 -> teamController.newTeam();
 					case 3 -> seasonController.newSeason();
 					case 4 -> gameController.newGame();
+					case 5 -> tseasonController.newTeamPerSeason();
+					case 6 -> pseasonController.newPlayerSeasons();
+					case 7 -> pgameController.newPlayerPerGame();
 				}
-
-				// dbaccessor.mostraRevistesArticlesAutors();
 				break;
 
-			case 4:
+			case 3:
 				//Update Data
 				switch (menu.dataMenu()) {
 					case 1 -> playerController.updatePlayer();
 					case 2 -> teamController.updateTeam();
 					case 3 -> seasonController.updateSeason();
 					case 4 -> gameController.updateGame();
+					case 5 -> tseasonController.updateTeamPerSeason();
+					case 6 -> pseasonController.updatePlayerSeasons();
+					case 7 -> pgameController.updatePlayerPerGame();
 				}
-				// dbaccessor.altaAutor();
 				break;
 
-			case 5:
+			case 4:
 				//Delete data
 				switch (menu.dataMenu()) {
 					case 1 -> playerController.deletePlayer();
 					case 2 -> teamController.deleteTeam();
 					case 3 -> seasonController.deleteSeason();
 					case 4 -> gameController.deleteGame();
+					case 5 -> tseasonController.deleteTeamPerSeason();
+					case 6 -> pseasonController.deletePlayerSeasons();
+					case 7 -> pgameController.deletePlayerPerGame();
 				}
-				// dbaccessor.altaRevista();
+				break;
+
+			case 5:
+				//Search info from a player into another tables
+				switch (menu.hugeDataMenu()) {
+					case 1 -> pgameController.showDataFromPlayers();
+					case 2 -> pseasonController.showDataFromPlayers();
+				}
 				break;
 
 			case 6:
@@ -152,4 +173,4 @@ public class NBAMain {
 //TO DO 			Seleccionar un elemento concreto y permitir su modificación.
 //TODO 		Posibilidad de modificar diferentes registros de información.
 //TO DO 		Posibilidad de eliminar un registro concreto de información.
-//TODO 		Posibilidad de eliminar un conjunto de registros de información que cumplan un condición.
+//TO DO 		Posibilidad de eliminar un conjunto de registros de información que cumplan un condición.

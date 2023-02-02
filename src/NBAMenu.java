@@ -15,26 +15,25 @@ public class NBAMenu {
 
     /**
      * Main Menu
+     *
      * @return int
      */
     public int mainMenu() {
         do {
             System.out.println(" \nMENU PRINCIPAL \n");
 
-            System.out.println("1. Mostrar información de alguna tabla");
-            System.out.println("2. Mostrar información sobre un jugador");
-            System.out.println("3. Introducir Datos");
-            System.out.println("4. Actualizar Datos");
-
-            System.out.println("7. Assigna jugador a un equip");
-            System.out.println("8. Desvincula jugador d'un equip");
+            System.out.println("1. Mostrar tabla");
+            System.out.println("2. Introducir Datos");
+            System.out.println("3. Actualizar Datos");
+            System.out.println("4. Eliminar Datos");
+            System.out.println("5. Mostrar información sobre un jugador");
             System.out.println("9. Borrar y Generar Tablas.");
             System.out.println("10. Salir");
             System.out.println("Escoger opción: ");
             try {
                 option = Integer.parseInt(br.readLine());
             } catch (NumberFormatException | IOException e) {
-                System.out.println("valor no vàlid");
+                System.out.println("valor no válido");
                 e.printStackTrace();
             }
         } while (option < 1 && option > 10);
@@ -44,6 +43,7 @@ public class NBAMenu {
 
     /**
      * Data Menu
+     *
      * @return int
      */
     public int dataMenu() {
@@ -52,17 +52,42 @@ public class NBAMenu {
             System.out.println("1. Jugadores");
             System.out.println("2. Equipos");
             System.out.println("3. Temporadas");
-            System.out.println("3. Equipos");
+            System.out.println("4. Partidos");
+            System.out.println("5. Equipos Por Temporada");
+            System.out.println("6. Jugadores Por Temporada");
+            System.out.println("7. Jugadores Por Partido");
             System.out.println("Escoger opción: ");
             try {
                 option = Integer.parseInt(br.readLine());
             } catch (NumberFormatException | IOException e) {
-                System.out.println("valor no vàlid");
+                System.out.println("valor no válido");
                 e.printStackTrace();
 
             }
-        } while (option < 1 && option > 4);
+        } while (option < 1 && option > 6);
 
+        return option;
+    }
+
+
+    /**
+     * Menu en el caso de Tablas Intermedias
+     * @return Opción
+     */
+    public int hugeDataMenu() {
+        do {
+            System.out.println("*** Quieres ver la información sobre... ***");
+            System.out.println("1. Partidos");
+            System.out.println("2. Temporadas");
+            System.out.println("Escoger opción: ");
+            try {
+                option = Integer.parseInt(br.readLine());
+            } catch (NumberFormatException | IOException e) {
+                System.out.println("valor no válido");
+                e.printStackTrace();
+            }
+
+        } while (option < 1 && option > 2);
         return option;
     }
 

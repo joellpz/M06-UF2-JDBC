@@ -54,24 +54,18 @@ public class NBAController {
         }
     }
 
+
     /**
      * Realiza la consulta relacionadas con las tablas intermedias,
      * solicita filtros para realizar las consultas.
+     * @param table Tabla
      */
-    public void showDataPerPlayer() {
-        System.out.println("*** Quieres ver Partidos(P) o Temporadas (T) ***");
-        System.out.println("*** Para ver ejemplo estos mostrarán datos: P -> 26, T -> 3");
-        String val = sc.nextLine().toUpperCase();
-        String table;
-        if (val.equals("P") || val.equals("T")) {
-            if (val.equals("P")) table = "playerpergame";
-            else table = "playerseasons";
-
-            showTable("players");
-            System.out.println("*** De que jugador quieres ver las información, introduce el IDPLAYER? ***");
-            String sql = "SELECT * FROM " + table + " WHERE idplayer ='" + sc.nextLine() + "'";
-            makeQueryGetAll(sql, table);
-        } else System.out.println("*** Error, Volviendo al Inicio ***");
+    public void showDataPerPlayer(String table) {
+        showTable("players");
+        System.out.println("*** Para ver ejemplo estos mostrarán datos: P -> Bam Adebayo, T -> Kareem Abdul-Jabbar");
+        System.out.println("*** De que jugador quieres ver las información, introduce el nombre del jugador? ***");
+        String sql = "SELECT * FROM " + table + " WHERE idplayer ='" + getFKValue("players", "name", sc.nextLine(), 2, 1) + "'";
+        makeQueryGetAll(sql, table);
     }
 
 
@@ -90,7 +84,7 @@ public class NBAController {
             while (rs.next()) {
                 for (String column : columns) {
                     if (fk.contains(column)) {
-                        System.out.print(column + ": " + getFKValue(column.substring(2) + "s", column, rs.getString(column), 2, 2) + " | ");
+                        System.out.print(column + ": " + getFKValue(column.substring(2) + "s", column, rs.getString(column), 1, 2) + " | ");
                     } else {
                         System.out.print(column + ": " + rs.getString(column) + " | ");
                     }
@@ -259,6 +253,7 @@ public class NBAController {
 
             newData(table, rs);
 
+
             rs.insertRow();
             rs.close();
             st.close();
@@ -280,9 +275,9 @@ public class NBAController {
                     ResultSet.CONCUR_UPDATABLE
             );
             System.out.println("*** ACTUALIZAR ***");
-            System.out.println("*** Que columna quieres comparar (recomendamos identificadores como id o name): ***");
+            System.out.println("*** Qué columna quieres comparar (recomendamos identificadores como id o name): ***");
             String columnToFind = sc.nextLine();
-            System.out.println("*** Que valor quieres buscar: ***");
+            System.out.println("*** Qué valor quieres buscar: ***");
             String valueToFind = sc.nextLine();
             String sqlBase = "SELECT * FROM " + table + " WHERE " + columnToFind + " = '" + valueToFind + "'"; //+ table;
             ResultSet rs = st.executeQuery(sqlBase);
@@ -294,17 +289,16 @@ public class NBAController {
                     rs.updateRow();
                 }
             }
-
             rs.close();
             st.close();
         } catch (
                 SQLException e) {
-            System.out.println("¡¡ ERROR -> " + e);
+            System.out.println("¡¡ ERROR -> " + e + " !!");
         }
     }
 
     /**
-     * Realiza una eliminació de las filas que coincidan con el filtro introducido.
+     * Realiza una eliminación de las filas que coincidan con el filtro introducido.
      *
      * @param table Tabla
      */
@@ -315,11 +309,12 @@ public class NBAController {
                     ResultSet.CONCUR_UPDATABLE
             );
             System.out.println("*** ELIMINAR ***");
-            System.out.println("*** Que columna quieres comparar (recomendamos identificadores como id o name): ***");
+            System.out.println("*** Qué columna quieres comparar (recomendamos identificadores como id o name): ***");
             String columnToFind = sc.nextLine();
-            System.out.println("*** Que valor quieres buscar (se eliminaran todas las finals que contengan este valor): ***");
+            System.out.println("*** Qué valor quieres buscar (se eliminaran todas las finals que contengan este valor): ***");
             String valueToFind = sc.nextLine();
-            String sqlBase = "SELECT * FROM " + table + " WHERE " + columnToFind + " = '" + valueToFind + "'"; //+ table;
+            System.out.println("*** Qué comparador quieres utilizar en este caso (<, >, = , !=)? ***");
+            String sqlBase = "SELECT * FROM " + table + " WHERE " + columnToFind + sc.nextLine() + valueToFind + "'"; //+ table;
             ResultSet rs = st.executeQuery(sqlBase);
             if (!rs.first()) {
                 System.out.println(" ** NO se ha encontrado ningún resultado con tu búsqueda ** ");
@@ -351,7 +346,10 @@ public class NBAController {
             boolean rep;
             String column;
             System.out.println("*** Introduce la siguiente información. ***");
-            for (int i = 2; i <= rsmd.getColumnCount(); i++) {
+            int ini = 2;
+            if ((rsmd.getTableName(1).equals("playerseasons") || rsmd.getTableName(1).equals("playerpergame") || rsmd.getTableName(1).equals("teamperseason")))
+                ini = 1;
+            for (int i = ini; i <= rsmd.getColumnCount(); i++) {
                 column = rsmd.getColumnName(i);
 
                 System.out.print(column);
@@ -360,26 +358,24 @@ public class NBAController {
                         do {
                             rep = false;
                             if (fk.contains(column) && !column.equals("idgame")) {
-                                List<String> val = getColName(table, column, 2);
+                                List<String> val = getColName(column.substring(2) + "s", column, 2);
                                 System.out.print(" es una Foreign Key, introduce " + val.get(0) + " de la tabla " + val.get(1) + ": ");
                                 String value = sc.nextLine();
-                                rs.updateInt(column, Integer.parseInt(getFKValue(table, column, value, 2, 1)));
+                                rs.updateInt(column, Integer.parseInt(getFKValue(column.substring(2) + "s", column, value, 2, 1)));
                             } else {
                                 System.out.print(" (integer): ");
                                 try {
-                                    rs.updateInt(column, sc.nextInt());
+                                    rs.updateInt(column, Integer.parseInt(sc.nextLine()));
                                 } catch (Exception e) {
                                     System.out.println("*** ERROR, introduce un número ***");
                                     rep = true;
                                 }
-                                sc.nextLine();
                             }
 
                         } while (rep);
-
-
                     }
-                    case Types.FLOAT -> {
+
+                    case Types.FLOAT, Types.REAL -> {
                         System.out.print(" (float): ");
                         rs.updateFloat(column, sc.nextFloat());
                         sc.nextLine();
@@ -393,7 +389,6 @@ public class NBAController {
                         rs.updateString(column, sc.nextLine());
                     }
                 }
-
             }
         } catch (
                 SQLException e) {
