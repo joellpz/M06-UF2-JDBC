@@ -1,3 +1,5 @@
+package Tools;
+
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
@@ -12,9 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Clase que permite usar la Libreria OpenCSV.
+ * Clase que permite usar la Libreria Tools.OpenCSV.
  */
 public class OpenCSV {
+
+
+    /**
+     * Basic Contructor
+     */
+    public OpenCSV() {
+    }
 
     /**
      * Imprime linea por línea String[], separando por comas cada posición.

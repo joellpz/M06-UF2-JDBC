@@ -1,3 +1,5 @@
+package Tools;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,6 +11,9 @@ public class NBAMenu {
     private int option;
     private final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
+    /**
+     * Menu de NBA
+     */
     public NBAMenu() {
         super();
     }
@@ -27,8 +32,8 @@ public class NBAMenu {
             System.out.println("3. Actualizar Datos");
             System.out.println("4. Eliminar Datos");
             System.out.println("5. Mostrar información sobre un jugador");
-            System.out.println("9. Borrar y Generar Tablas.");
-            System.out.println("10. Salir");
+            System.out.println("6. Borrar y Generar Tablas.");
+            System.out.println("7. Salir");
             System.out.println("Escoger opción: ");
             try {
                 option = Integer.parseInt(br.readLine());
@@ -36,7 +41,7 @@ public class NBAMenu {
                 System.out.println("valor no válido");
                 e.printStackTrace();
             }
-        } while (option < 1 && option > 10);
+        } while (option < 1 && option > 7);
 
         return option;
     }
@@ -64,7 +69,7 @@ public class NBAMenu {
                 e.printStackTrace();
 
             }
-        } while (option < 1 && option > 6);
+        } while (option < 1 && option > 7);
 
         return option;
     }

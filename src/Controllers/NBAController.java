@@ -257,6 +257,8 @@ public class NBAController {
             rs.insertRow();
             rs.close();
             st.close();
+
+            System.out.println(" *** INSERTADO *** ");
         } catch (
                 SQLException e) {
             System.out.println("¡¡ ERROR -> " + e);
@@ -289,6 +291,8 @@ public class NBAController {
                     rs.updateRow();
                 }
             }
+
+            System.out.println(" *** ACTUALIZADO ***");
             rs.close();
             st.close();
         } catch (
@@ -314,7 +318,7 @@ public class NBAController {
             System.out.println("*** Qué valor quieres buscar (se eliminaran todas las finals que contengan este valor): ***");
             String valueToFind = sc.nextLine();
             System.out.println("*** Qué comparador quieres utilizar en este caso (<, >, = , !=)? ***");
-            String sqlBase = "SELECT * FROM " + table + " WHERE " + columnToFind + sc.nextLine() + valueToFind + "'"; //+ table;
+            String sqlBase = "SELECT * FROM " + table + " WHERE " + columnToFind + sc.nextLine() +"'"+ valueToFind + "'"; //+ table;
             ResultSet rs = st.executeQuery(sqlBase);
             if (!rs.first()) {
                 System.out.println(" ** NO se ha encontrado ningún resultado con tu búsqueda ** ");
@@ -323,6 +327,8 @@ public class NBAController {
                     rs.deleteRow();
                 }
             }
+
+            System.out.println(" *** ELIMINADO ***");
             rs.close();
             st.close();
         } catch (

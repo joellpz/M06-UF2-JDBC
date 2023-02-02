@@ -1,3 +1,5 @@
+package Tools;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,11 +17,14 @@ import java.util.stream.Collectors;
 public class NBAImport {
     PreparedStatement pst;
     Statement statement;
+    Connection c;
 
     /**
      * Public Constructor
+     * @param connection Conexión
      */
-    public NBAImport() {
+    public NBAImport(Connection connection) {
+        this.c = connection;
     }
 
     /**
@@ -49,7 +54,7 @@ public class NBAImport {
     public void executeSQLScript(String path) {
         try {
             System.out.println("*** Reiniciando BBDD ***");
-            statement = NBAMain.c.createStatement();
+            statement = c.createStatement();
             try (BufferedReader br = new BufferedReader(new FileReader(path))) {
                 statement.execute(br.lines().collect(Collectors.joining(" \n")));
             }
@@ -79,7 +84,7 @@ public class NBAImport {
 
             System.out.println("*** Insertando datos en " + table + " ***");
 
-            statement = NBAMain.c.createStatement();
+            statement = c.createStatement();
             Map<String, String> mapType = getColumnType(table);
             List<String> foreignKeys = getForeignKeys(table);
             foreignKeys.remove("idgame");
@@ -92,7 +97,7 @@ public class NBAImport {
                 aux = aux.concat("?,");
             }
             sqlBase = sqlBase.substring(0, sqlBase.length() - 1).concat(aux.substring(0, aux.length() - 1).concat(");"));
-            pst = NBAMain.c.prepareStatement(sqlBase);
+            pst = c.prepareStatement(sqlBase);
 
             boolean first = true;
             for (String[] data : dataList) {
