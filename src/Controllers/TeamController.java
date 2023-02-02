@@ -1,27 +1,57 @@
 package Controllers;
 
-import Controllers.NBAController;
-
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 
+/**
+ * Controlador para la tabla 'teams'
+ */
 public class TeamController {
 
-	private Connection connection;
-	private NBAController nbaController ;
+    private final Connection connection;
+    private final NBAController nbaController;
+    private final String table;
 
-	public TeamController(Connection connection) {
-		this.connection = connection;
-		this.nbaController = new NBAController(this.connection);
-	}
+    /**
+     * Define la conexión del controlador con la tabla Equipos (Teams)
+     * @param connection Data Base Connection
+     */
+    public TeamController(Connection connection) {
+        this.connection = connection;
+        this.nbaController = new NBAController(this.connection);
+        this.table = "teams";
+    }
 
-	public void showTeams() throws SQLException, IOException {
-		nbaController.showTable("teams");
-	}
+    /**
+     * Muestra la información contenida dentro de la tabla Teams
+     * 
+     */
+    public void showTeams() {
+        nbaController.showTable(table);
+    }
 
-	public void newTeam() throws SQLException {
-		nbaController.insertNewData("teams");
-	}
+
+    /**
+     * Añade un equipo dentro de la tabla Teams
+     * 
+     */
+    public void newTeam()  {
+        nbaController.insertNewData(table);
+    }
+
+    /**
+     * Actualiza la información sobre un Equipo
+     * 
+     */
+    public void updateTeam()  {
+        nbaController.updateData(table);
+    }
+
+    /**
+     * Elimina la entrada sobre un Equipo
+     * 
+     */
+    public void deleteTeam() {
+        nbaController.deleteData(table);
+    }
 
 }

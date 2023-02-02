@@ -1,6 +1,7 @@
 
 
 import Controllers.*;
+import DBConnection.ConnectionFactory;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -8,9 +9,22 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * Main
+ */
 public class NBAMain {
 
+	/**
+	 * Connection
+	 */
 	public static Connection c;
+
+	/**
+	 * Main
+	 * @param args args
+	 * @throws IOException Exception
+	 * @throws SQLException Exception
+	 */
 	public static void main(String[] args) throws IOException, SQLException {
 		NBAMenu menu = new NBAMenu();
 		NBAImport nbaImport = new NBAImport();
@@ -27,7 +41,7 @@ public class NBAMain {
 		Statement st = c.createStatement();
 
 //		Connection conn = null;
-//		Identity identity;
+//		DBConnection.Identity identity;
 //		int option;
 //		int intents = 0;
 //		DBAccessor dbaccessor = new DBAccessor();
@@ -53,7 +67,8 @@ public class NBAMain {
 				break;
 
 			case 3:
-				switch (menu.insertMenu()) {
+				//Insert Data
+				switch (menu.dataMenu()) {
 					case 1 -> playerController.newPlayer();
 					case 2 -> teamController.newTeam();
 					case 3 -> seasonController.newSeason();
@@ -64,10 +79,24 @@ public class NBAMain {
 				break;
 
 			case 4:
+				//Update Data
+				switch (menu.dataMenu()) {
+					case 1 -> playerController.updatePlayer();
+					case 2 -> teamController.updateTeam();
+					case 3 -> seasonController.updateSeason();
+					case 4 -> gameController.updateGame();
+				}
 				// dbaccessor.altaAutor();
 				break;
 
 			case 5:
+				//Delete data
+				switch (menu.dataMenu()) {
+					case 1 -> playerController.deletePlayer();
+					case 2 -> teamController.deleteTeam();
+					case 3 -> seasonController.deleteSeason();
+					case 4 -> gameController.deleteGame();
+				}
 				// dbaccessor.altaRevista();
 				break;
 
@@ -119,8 +148,8 @@ public class NBAMain {
 //TO DO 			Seleccionar todos los elementos que contengan un texto concreto.
 //TO DO 			Seleccionar todos los elementos que cumplan una condición.
 //TO DO 			Seleccionar elementos concretos.
-//TODO 		Posibilidad de modificar un registro concreto de información. Ejemplo:
-//TODO 			Seleccionar un elemento concreto y permitir su modificación.
+//TO DO 		Posibilidad de modificar un registro concreto de información. Ejemplo:
+//TO DO 			Seleccionar un elemento concreto y permitir su modificación.
 //TODO 		Posibilidad de modificar diferentes registros de información.
-//TODO 		Posibilidad de eliminar un registro concreto de información.
+//TO DO 		Posibilidad de eliminar un registro concreto de información.
 //TODO 		Posibilidad de eliminar un conjunto de registros de información que cumplan un condición.

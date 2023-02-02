@@ -46,7 +46,7 @@
 //	 * 
 //	 * @return DB connection or null if a problem occurred when trying to connect.
 //	 */
-//	public Connection getConnection(Identity identity) {
+//	public Connection getConnection(DBConnection.Identity identity) {
 //
 //		// Implement the DB connection
 //		String url = null;

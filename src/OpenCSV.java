@@ -11,6 +11,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Clase que permite usar la Libreria OpenCSV.
+ */
 public class OpenCSV {
 
     /**

@@ -1,13 +1,15 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
+package DBConnection;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
+/**
+ * Gestiona la conexión con al BBDD
+ */
 public class ConnectionFactory {
 	// init database constants
 	private static final String DATABASE_DRIVER = "org.postgresql.Driver";
@@ -23,17 +25,24 @@ public class ConnectionFactory {
 	private String user;
 	private String password;
 	private String schema;
-	
+
 	// init connection object
 	private Connection connection;
 	// init properties object
 	private Properties properties;
 
+	/**
+	 * Constructor de ConnectionFactory
+	 */
 	private ConnectionFactory() {
 		super();
 		init();
 	}
 
+	/**
+	 * Devuleve la Instancia.
+	 * @return ConnectionFactory
+	 */
 	public static ConnectionFactory getInstance() {
 		if (instance == null) {
 			instance = new ConnectionFactory();
@@ -49,7 +58,7 @@ public class ConnectionFactory {
 	 */
 	public void init() {
 		Properties prop = new Properties();
-		InputStream propStream = this.getClass().getClassLoader().getResourceAsStream("db.properties");
+		InputStream propStream = this.getClass().getClassLoader().getResourceAsStream("DBConnection/db.properties");
 
 		try {
 			prop.load(propStream);
@@ -66,6 +75,10 @@ public class ConnectionFactory {
 		}
 	}
 
+	/**
+	 * Devuelve las Propiedades
+	 * @return Properties
+	 */
 //	// create properties
 	private Properties getProperties() {
 		if (properties == null) {
@@ -77,6 +90,10 @@ public class ConnectionFactory {
 		return properties;
 	}
 
+	/**
+	 * Realiza la conexión.
+	 * @return Connection
+	 */
 	// connect database
 	public Connection connect() {
 		if (connection == null) {
@@ -109,6 +126,9 @@ public class ConnectionFactory {
 		return connection;
 	}
 
+	/**
+	 * Desconecta la conexión con la BBDD
+	 */
 	// disconnect database
 	public void disconnect() {
 		if (connection != null) {

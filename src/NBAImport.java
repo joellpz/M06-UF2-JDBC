@@ -9,21 +9,27 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
+/**
+ * Clase que permite importar CSV e introducirlo en la BBDD.
+ */
 public class NBAImport {
     PreparedStatement pst;
     Statement statement;
 
+    /**
+     * Public Constructor
+     */
     public NBAImport() {
     }
 
     /**
      * Metodo para reconstruir la Base de Datos.
      */
-    public void resetDataBase() throws SQLException, IOException {
+    public void resetDataBase() {
         executeSQLScript("data/EER/nba-db-postgresql.sql");
         Scanner sc = new Scanner(System.in);
         System.out.println("*** ¿Quieres Importar los datos de los CSV (S/N)? ***");
-        if (sc.nextLine().toLowerCase().equals("s")) {
+        if (sc.nextLine().equalsIgnoreCase("s")) {
             importData("data/CSV/players.csv");
             importData("data/CSV/teams.csv");
             importData("data/CSV/seasons.csv");
@@ -33,7 +39,6 @@ public class NBAImport {
             importData("data/CSV/playerPerGame.csv");
             importData("data/CSV/teamPerSeason.csv");
         }
-
     }
 
     /**
@@ -41,14 +46,19 @@ public class NBAImport {
      *
      * @param path URI SQL Script
      */
-    public void executeSQLScript(String path) throws SQLException, IOException {
-        System.out.println("*** Reiniciando BBDD ***");
-        statement = NBAMain.c.createStatement();
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-            statement.execute(br.lines().collect(Collectors.joining(" \n")));
+    public void executeSQLScript(String path) {
+        try {
+            System.out.println("*** Reiniciando BBDD ***");
+            statement = NBAMain.c.createStatement();
+            try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+                statement.execute(br.lines().collect(Collectors.joining(" \n")));
+            }
+            statement.close();
+            System.out.println("*** Done! ***");
+        } catch (
+                SQLException | IOException e) {
+            System.out.println("¡¡ ERROR -> " + e);
         }
-        statement.close();
-        System.out.println("*** Done! ***");
     }
 
     /**
@@ -56,118 +66,123 @@ public class NBAImport {
      *
      * @param path CSV with data
      */
-    public void importData(String path) throws SQLException {
-        List<String[]> dataList = OpenCSV.readCSV(path);
-        ArrayList<String> dataContainedType = new ArrayList<>();
-        Map<String, String> dataContained = new HashMap<>();
+    public void importData(String path) {
+        try {
+            List<String[]> dataList = OpenCSV.readCSV(path);
+            ArrayList<String> dataContainedType = new ArrayList<>();
+            Map<String, String> dataContained = new HashMap<>();
 
-        String table = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
-        String sqlBase = "INSERT INTO " + table + "(";
-        String aux = ") VALUES (";
-        int val;
+            String table = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
+            String sqlBase = "INSERT INTO " + table + "(";
+            String aux = ") VALUES (";
+            int val;
 
-        System.out.println("*** Insertando datos en " + table + " ***");
+            System.out.println("*** Insertando datos en " + table + " ***");
 
-        statement = NBAMain.c.createStatement();
-        Map<String, String> mapType = getColumnType(table);
-        List<String> foreignKeys = getForeignKeys(table);
-        foreignKeys.remove("idgame");
-        List<String> primaryKeys = getPrimaryKeys(table);
+            statement = NBAMain.c.createStatement();
+            Map<String, String> mapType = getColumnType(table);
+            List<String> foreignKeys = getForeignKeys(table);
+            foreignKeys.remove("idgame");
+            List<String> primaryKeys = getPrimaryKeys(table);
 
-        for (int i = 0; i < mapType.size(); i++) {
-            if (mapType.keySet().stream().toList().get(i).matches("^[0-9].+"))
-                sqlBase = sqlBase.concat("\"" + mapType.keySet().stream().toList().get(i)) + "\",";
-            else sqlBase = sqlBase.concat(mapType.keySet().stream().toList().get(i)) + ",";
-            aux = aux.concat("?,");
-        }
-        sqlBase = sqlBase.substring(0, sqlBase.length() - 1).concat(aux.substring(0, aux.length() - 1).concat(");"));
-        pst = NBAMain.c.prepareStatement(sqlBase);
-
-        boolean first = true;
-        for (String[] data : dataList) {
-            for (int i = 0; i < data.length; i++) {
-                if (first) dataContainedType.add(data[i].toLowerCase());
-                else {
-                    dataContained.put(dataContainedType.get(i), data[i]);
-                }
+            for (int i = 0; i < mapType.size(); i++) {
+                if (mapType.keySet().stream().toList().get(i).matches("^[0-9].+"))
+                    sqlBase = sqlBase.concat("\"" + mapType.keySet().stream().toList().get(i)) + "\",";
+                else sqlBase = sqlBase.concat(mapType.keySet().stream().toList().get(i)) + ",";
+                aux = aux.concat("?,");
             }
-            if (!first) {
-                for (int i = 1; i < mapType.keySet().size() + 1; i++) {
-                    aux = mapType.keySet().stream().toList().get(i - 1);
-                    val = 0;
-                    if (foreignKeys.contains(aux)) {
-                        val = makeQueryFK(aux.substring(2) + "s", aux, dataContained.get(aux));
+            sqlBase = sqlBase.substring(0, sqlBase.length() - 1).concat(aux.substring(0, aux.length() - 1).concat(");"));
+            pst = NBAMain.c.prepareStatement(sqlBase);
+
+            boolean first = true;
+            for (String[] data : dataList) {
+                for (int i = 0; i < data.length; i++) {
+                    if (first) dataContainedType.add(data[i].toLowerCase());
+                    else {
+                        dataContained.put(dataContainedType.get(i), data[i]);
                     }
-                    switch (mapType.get(aux)) {
-                        case "varchar" -> pst.setString(i, dataContained.get(aux.toLowerCase()));
-                        case "int4" -> {
-                            if (foreignKeys.contains(aux) && val == 0 && primaryKeys.contains(aux)) {
-                                insertNewLine(aux.substring(2) + "s", dataContained.get(aux));
-                                i--;
-                            } else if (val != 0) {
-                                pst.setInt(i, val);
-                            } else {
-                                if (dataContained.get(aux.toLowerCase()).replaceAll("[^0-9]", "").equals("")) {
-                                    pst.setNull(i, java.sql.Types.INTEGER);
-                                } else if (dataContained.get(aux.toLowerCase()) == null)
-                                    System.out.println("null " + dataContained.get(aux.toLowerCase()));
-                                else
-                                    pst.setObject(i, Integer.parseInt(dataContained.get(aux.toLowerCase()).replaceAll("[^0-9]", "")));
-                            }
+                }
+                if (!first) {
+                    for (int i = 1; i < mapType.keySet().size() + 1; i++) {
+                        aux = mapType.keySet().stream().toList().get(i - 1);
+                        val = 0;
+                        if (foreignKeys.contains(aux)) {
+                            val = makeQueryFK(aux.substring(2) + "s", aux, dataContained.get(aux));
                         }
-                        case "date" -> {
-                            if (dataContained.get(aux.toLowerCase()) == null) {
-                                pst.setNull(i, Types.DATE);
-                            } else if (dataContained.get(aux.toLowerCase()).length() == 4) {
-                                pst.setDate(i, Date.valueOf(dataContained.get(aux.toLowerCase()) + "-01-01"));
-                            } else {
-                                if (!dataContained.get(aux.toLowerCase()).matches("\\d+-\\d+-\\d+")) {
-                                    try {
-                                        pst.setDate(i, Date.valueOf(new SimpleDateFormat("yyyy-MM-dd")
-                                                .format(new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.ENGLISH)
-                                                        .parse(dataContained.get(aux.toLowerCase())))));
-                                    } catch (ParseException e) {
-                                        throw new RuntimeException(e);
-                                    }
+                        switch (mapType.get(aux)) {
+                            case "varchar" -> pst.setString(i, dataContained.get(aux.toLowerCase()));
+                            case "int4" -> {
+                                if (foreignKeys.contains(aux) && val == 0 && primaryKeys.contains(aux)) {
+                                    insertNewLine(aux.substring(2) + "s", dataContained.get(aux));
+                                    i--;
+                                } else if (val != 0) {
+                                    pst.setInt(i, val);
                                 } else {
-                                    pst.setDate(i, Date.valueOf(dataContained.get(aux.toLowerCase())));
+                                    if (dataContained.get(aux.toLowerCase()).replaceAll("[^0-9]", "").equals("")) {
+                                        pst.setNull(i, java.sql.Types.INTEGER);
+                                    } else if (dataContained.get(aux.toLowerCase()) == null)
+                                        System.out.println("null " + dataContained.get(aux.toLowerCase()));
+                                    else
+                                        pst.setObject(i, Integer.parseInt(dataContained.get(aux.toLowerCase()).replaceAll("[^0-9]", "")));
                                 }
                             }
-                        }
-                        case "float4" -> {
-                            if (dataContained.get(aux.toLowerCase()).equals("none")) pst.setObject(i, null);
-                            else {
-                                try {
-                                    pst.setObject(i, Float.parseFloat(dataContained.get(aux.toLowerCase())));
-                                } catch (Exception ignored) {
+                            case "date" -> {
+                                if (dataContained.get(aux.toLowerCase()) == null) {
+                                    pst.setNull(i, Types.DATE);
+                                } else if (dataContained.get(aux.toLowerCase()).length() == 4) {
+                                    pst.setDate(i, Date.valueOf(dataContained.get(aux.toLowerCase()) + "-01-01"));
+                                } else {
+                                    if (!dataContained.get(aux.toLowerCase()).matches("\\d+-\\d+-\\d+")) {
+                                        try {
+                                            pst.setDate(i, Date.valueOf(new SimpleDateFormat("yyyy-MM-dd")
+                                                    .format(new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.ENGLISH)
+                                                            .parse(dataContained.get(aux.toLowerCase())))));
+                                        } catch (ParseException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    } else {
+                                        pst.setDate(i, Date.valueOf(dataContained.get(aux.toLowerCase())));
+                                    }
                                 }
                             }
-                        }
-                        case "interval" -> {
-                            if (dataContained.get(aux.toLowerCase()).matches("\\d+:\\d+"))
-                                pst.setObject(i, "00:" + dataContained.get(aux.toLowerCase()), Types.OTHER);
-                            else pst.setObject(i, "'00:00:00'", Types.OTHER);
+                            case "float4" -> {
+                                if (dataContained.get(aux.toLowerCase()).equals("none")) pst.setObject(i, null);
+                                else {
+                                    try {
+                                        pst.setObject(i, Float.parseFloat(dataContained.get(aux.toLowerCase())));
+                                    } catch (Exception ignored) {
+                                    }
+                                }
+                            }
+                            case "interval" -> {
+                                if (dataContained.get(aux.toLowerCase()).matches("\\d+:\\d+"))
+                                    pst.setObject(i, "00:" + dataContained.get(aux.toLowerCase()), Types.OTHER);
+                                else pst.setObject(i, "'00:00:00'", Types.OTHER);
+                            }
                         }
                     }
+                    try {
+                        pst.execute();
+                    } catch (SQLException e) {
+                        System.out.println(e);
+                    }
                 }
-                try {
-                    pst.execute();
-                } catch (SQLException e) {
-                    System.out.println(e);
-                }
+                first = false;
+                dataContained.clear();
             }
-            first = false;
-            dataContained.clear();
+            statement.close();
+            System.out.println("*** Done! ***");
+        } catch (
+                SQLException e) {
+            System.out.println("¡¡ ERROR -> " + e);
         }
-        statement.close();
-        System.out.println("*** Done! ***");
     }
 
     /**
      * Funciona que recoge las Primary Keys de la Tabla indicada.
      *
      * @param table Nombre de la Tabla
-     * @return
+     * @return Lista de las PrimaryKeys
      */
     private List<String> getPrimaryKeys(String table) {
         List<String> list = new ArrayList<>();
@@ -188,7 +203,7 @@ public class NBAImport {
      * Recoge el nombre de la columna juntamente con el tipo de dato que tiene que introducir.
      *
      * @param table Tabla
-     * @return Map <Columna, Tipo de Dato>
+     * @return Map Columna, Tipo de Dato
      */
     public Map<String, String> getColumnType(String table) {
         Map<String, String> mapType = new HashMap<>();
@@ -220,9 +235,9 @@ public class NBAImport {
      * Enumera las foreign keys de la tabla definida, y las obtiene juntamente con su nombre de Contraint.
      *
      * @param table Tabla
-     * @return Map <Nombre de Columna,Noombre de la Constraint>
+     * @return Map Nombre de Columna,Noombre de la Constraint
      */
-    public List<String> getForeignKeys(String table) throws SQLException {
+    public List<String> getForeignKeys(String table) {
         List<String> foreignKeys = new ArrayList<>();
         String sql4FK = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME='" + table.toLowerCase() + "' AND CONSTRAINT_NAME LIKE '%_fkey'";
         try {
@@ -244,7 +259,7 @@ public class NBAImport {
      * @param table       Tabla en la que buscar.
      * @param column      Columna que queremos recoger.
      * @param valueToFind Valor a buscar.
-     * @return
+     * @return  int
      */
     public int makeQueryFK(String table, String column, String valueToFind) {
         if (column.equals("local") || column.equals("visitor") || column.equals("champion")) {

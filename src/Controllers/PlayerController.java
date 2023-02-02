@@ -1,35 +1,58 @@
 package Controllers;
 
-import Controllers.NBAController;
-
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Controlador para la tabla 'players'
+ */
 public class PlayerController {
 
-	private Connection connection;
-	private NBAController nbaController ;
-	private String table = "players";
+	private final Connection connection;
+	private final NBAController nbaController ;
+	private final String table = "players";
 	List<String> columns;
-	
-	public PlayerController(Connection c) throws SQLException {
-		this.connection = c;
-		this.nbaController = new NBAController(connection);
+
+	/**
+	 * Define la conexión del controlador con la tabla Jugaodres (players)
+	 * @param connection Data Base Connection
+	 * 
+	 */
+	public PlayerController(Connection connection)  {
+		this.connection = connection;
+		this.nbaController = new NBAController(this.connection);
 		columns = nbaController.getColumnsName(table);
 	}
 
-	public void showPlayers() throws SQLException, IOException {
-		nbaController.showTable("players");
+	/**
+	 * Muestra la información contenida dentro de la tabla Players
+	 * 
+	 */
+	public void showPlayers(){
+		nbaController.showTable(table);
 	}
 
-	public void newPlayer() throws SQLException {
-		nbaController.insertNewData("players");
+	/**
+	 * Añade un Jugador dentro de la tabla Players
+	 * 
+	 */
+	public void newPlayer()  {
+		nbaController.insertNewData(table);
 	}
-	public void updatePlayer(){
+	/**
+	 * Actualiza la información sobre un Jugador
+	 * 
+	 */
+	public void updatePlayer()  {
+		nbaController.updateData(table);
+	}
 
+	/**
+	 * Elimina la entrada sobre un Jugador
+	 * 
+	 */
+	public void deletePlayer() {
+		nbaController.deleteData(table);
 	}
 
 }

@@ -1,23 +1,52 @@
 package Controllers;
 
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 
+/**
+ * Controlador para la tabla 'seasons'
+ */
 public class SeasonController {
-    private Connection connection;
-    private NBAController nbaController ;
-
+    private final Connection connection;
+    private final NBAController nbaController ;
+    private final String table;
+    /**
+     * Define la conexión del controlador con la tabla Temporadas (Seasons)
+     * @param connection Data Base Connection
+     */
     public SeasonController(Connection connection) {
         this.connection = connection;
         this.nbaController = new NBAController(this.connection);
+        this.table = "seasons";
     }
 
-    public void showSeasons() throws SQLException, IOException {
-        nbaController.showTable("seasons");
+    /**
+     * Muestra la información contenida dentro de la tabla Seasons
+     * 
+     */
+    public void showSeasons()  {
+        nbaController.showTable(table);
     }
 
-    public void newSeason() throws SQLException {
-        nbaController.insertNewData("seasons");
+    /**
+     * Añade una Temporada dentro de la tabla Seasons
+     * 
+     */
+    public void newSeason()  {
+        nbaController.insertNewData(table);
+    }
+
+    /**
+     * Actualiza la información sobre una Temporada
+     * 
+     */
+    public void updateSeason()  {
+        nbaController.updateData(table);
+    }
+    /**
+     * Elimina la entrada sobre una Temporada
+     * 
+     */
+    public void deleteSeason() {
+        nbaController.deleteData(table);
     }
 }
