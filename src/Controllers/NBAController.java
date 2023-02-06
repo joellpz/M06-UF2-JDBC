@@ -58,6 +58,7 @@ public class NBAController {
     /**
      * Realiza la consulta relacionadas con las tablas intermedias,
      * solicita filtros para realizar las consultas.
+     *
      * @param table Tabla
      */
     public void showDataPerPlayer(String table) {
@@ -251,7 +252,7 @@ public class NBAController {
             System.out.println("*** INSERTAR ***");
             rs.moveToInsertRow();
 
-            newData(table, rs);
+            newData(table, rs, null);
 
 
             rs.insertRow();
@@ -272,31 +273,42 @@ public class NBAController {
      */
     public void updateData(String table) {
         try {
+            System.out.println("*** ACTUALIZAR ***");
+            System.out.println("*** Qué columna quieres comparar: ***");
+            List<String> columns = getColumnsName(table);
+            for (int i = 0; i < columns.size(); i++) {
+                System.out.println((i + 1) + ": " + columns.get(i));
+            }
+            String column = columns.get(sc.nextInt() - 1);
+            sc.nextLine();
+            System.out.println("*** Qué valor quieres buscar: ***");
+            String sqlBase = "SELECT * FROM " + table + " WHERE " + column + " = '" + sc.nextLine() + "'"; //+ table;
             Statement st = conn.createStatement(
                     ResultSet.TYPE_SCROLL_SENSITIVE,
                     ResultSet.CONCUR_UPDATABLE
             );
-            System.out.println("*** ACTUALIZAR ***");
-            System.out.println("*** Qué columna quieres comparar (recomendamos identificadores como id o name): ***");
-            String columnToFind = sc.nextLine();
-            System.out.println("*** Qué valor quieres buscar: ***");
-            String valueToFind = sc.nextLine();
-            String sqlBase = "SELECT * FROM " + table + " WHERE " + columnToFind + " = '" + valueToFind + "'"; //+ table;
             ResultSet rs = st.executeQuery(sqlBase);
-            if (!rs.first()) {
+            rs.last();
+            if (rs.getRow()==0){
                 System.out.println(" ** NO se ha encontrado ningún resultado con tu búsqueda ** ");
             } else {
+                rs.beforeFirst();
                 while (rs.next()) {
-                    newData(table, rs);
+                    System.out.println("*** Que columna quieres actualizar? ***");
+                    for (int i = 1; i < columns.size(); i++) {
+                        System.out.println(i + ": " + columns.get(i));
+                    }
+                    column = columns.get(sc.nextInt());
+                    sc.nextLine();
+                    newData(table, rs, column);
                     rs.updateRow();
                 }
+                System.out.println(" *** ACTUALIZADO ***");
             }
 
-            System.out.println(" *** ACTUALIZADO ***");
             rs.close();
             st.close();
-        } catch (
-                SQLException e) {
+        } catch (SQLException e) {
             System.out.println("¡¡ ERROR -> " + e + " !!");
         }
     }
@@ -313,16 +325,23 @@ public class NBAController {
                     ResultSet.CONCUR_UPDATABLE
             );
             System.out.println("*** ELIMINAR ***");
-            System.out.println("*** Qué columna quieres comparar (recomendamos identificadores como id o name): ***");
-            String columnToFind = sc.nextLine();
+            System.out.println("*** Qué columna quieres comparar: ***");
+            List<String> columns = getColumnsName(table);
+            for (int i = 0; i < columns.size(); i++) {
+                System.out.println((i + 1) + ": " + columns.get(i));
+            }
+            String columnToFind = columns.get(sc.nextInt());
+            sc.nextLine();
             System.out.println("*** Qué valor quieres buscar (se eliminaran todas las finals que contengan este valor): ***");
             String valueToFind = sc.nextLine();
             System.out.println("*** Qué comparador quieres utilizar en este caso (<, >, = , !=)? ***");
-            String sqlBase = "SELECT * FROM " + table + " WHERE " + columnToFind + sc.nextLine() +"'"+ valueToFind + "'"; //+ table;
+            String sqlBase = "SELECT * FROM " + table + " WHERE " + columnToFind + sc.nextLine() + "'" + valueToFind + "'"; //+ table;
             ResultSet rs = st.executeQuery(sqlBase);
-            if (!rs.first()) {
+            rs.last();
+            if (rs.getRow() == 0) {
                 System.out.println(" ** NO se ha encontrado ningún resultado con tu búsqueda ** ");
             } else {
+                rs.beforeFirst();
                 while (rs.next()) {
                     rs.deleteRow();
                 }
@@ -331,8 +350,7 @@ public class NBAController {
             System.out.println(" *** ELIMINADO ***");
             rs.close();
             st.close();
-        } catch (
-                SQLException e) {
+        } catch (SQLException e) {
             System.out.println("¡¡ ERROR -> " + e);
         }
 
@@ -345,7 +363,7 @@ public class NBAController {
      * @param table String
      * @param rs    ResultSet de la Consulta
      */
-    private void newData(String table, ResultSet rs) {
+    private void newData(String table, ResultSet rs, String updateColumn) {
         try {
             List<String> fk = getForeignKeys(table);
             ResultSetMetaData rsmd = rs.getMetaData();
@@ -353,10 +371,16 @@ public class NBAController {
             String column;
             System.out.println("*** Introduce la siguiente información. ***");
             int ini = 2;
+            int colNum;
             if ((rsmd.getTableName(1).equals("playerseasons") || rsmd.getTableName(1).equals("playerpergame") || rsmd.getTableName(1).equals("teamperseason")))
                 ini = 1;
-            for (int i = ini; i <= rsmd.getColumnCount(); i++) {
-                column = rsmd.getColumnName(i);
+            if (updateColumn != null) {
+                colNum = 2;
+            } else colNum = rsmd.getColumnCount();
+            for (int i = ini; i <= colNum; i++) {
+                if (updateColumn != null) {
+                    column = updateColumn;
+                } else column = rsmd.getColumnName(i);
 
                 System.out.print(column);
                 switch (rsmd.getColumnType(i)) {
@@ -394,11 +418,15 @@ public class NBAController {
                         System.out.print(" (varchar): ");
                         rs.updateString(column, sc.nextLine());
                     }
+                    case Types.OTHER -> {
+                        rs.updateObject(column, "00:00:00", Types.OTHER);
+                    }
                 }
             }
-        } catch (
-                SQLException e) {
+        } catch (SQLException e) {
             System.out.println("¡¡ ERROR -> " + e);
+        } catch (NumberFormatException numException) {
+            System.out.println("ERROR, al introducir el valor anterior");
         }
     }
 }

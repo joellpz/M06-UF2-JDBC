@@ -39,9 +39,8 @@ public class NBAMenu {
                 option = Integer.parseInt(br.readLine());
             } catch (NumberFormatException | IOException e) {
                 System.out.println("valor no válido");
-                e.printStackTrace();
             }
-        } while (option < 1 && option > 7);
+        } while (option < 1 || option > 7);
 
         return option;
     }

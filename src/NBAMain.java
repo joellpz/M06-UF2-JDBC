@@ -25,11 +25,12 @@ public class NBAMain {
 	 * @throws SQLException Exception
 	 */
 	public static void main(String[] args) throws IOException, SQLException {
-		NBAMenu menu = new NBAMenu();
-		NBAImport nbaImport = new NBAImport(c);
-		
 		ConnectionFactory connectionFactory = ConnectionFactory.getInstance();
 		c = connectionFactory.connect();
+
+		NBAMenu menu = new NBAMenu();
+		NBAImport nbaImport = new NBAImport(c);
+
 
 		TeamController teamController = new TeamController(c);
 		PlayerController playerController = new PlayerController(c);
@@ -113,6 +114,7 @@ public class NBAMain {
 					}
 				}
 				case 6 -> nbaImport.resetDataBase();
+				case 7 -> System.exit(0);
 
 				default -> System.out.println("*** Introduce un valor válido! ***");
 			}
