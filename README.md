@@ -12,7 +12,7 @@ Permite realizar acciones tales como:
  
 <h2> Funcionamiento: </h2>
 
-Para empezar a utilizar nuestro programa deberemos tener en cuenta dos factores imprescindibles relacionados con la Base de Datos. Por una parte encontrar un servició de Base de Datos activo y accesible para introducir los datos de acceso dentro de el Package Connection en las propieties.
+Para empezar a utilizar nuestro programa deberemos tener en cuenta dos factores imprescindibles relacionados con la Base de Datos, por una parte encontrar un servicio de Base de Datos activo y accesible para introducir los datos de acceso dentro del package `DBConnection` en las `db.properties`.
 
 
 <h2> Author: </h2>
