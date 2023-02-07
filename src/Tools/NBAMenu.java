@@ -1,15 +1,12 @@
 package Tools;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.Scanner;
 
 /**
  * Clase que crea los menus de selección.
  */
 public class NBAMenu {
-    private int option;
-    private final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    private final Scanner br = new Scanner(System.in);
 
     /**
      * Menu de NBA
@@ -24,6 +21,7 @@ public class NBAMenu {
      * @return int
      */
     public int mainMenu() {
+        int option = 0;
         do {
             System.out.println(" \nMENU PRINCIPAL \n");
 
@@ -36,8 +34,8 @@ public class NBAMenu {
             System.out.println("7. Salir");
             System.out.println("Escoger opción: ");
             try {
-                option = Integer.parseInt(br.readLine());
-            } catch (NumberFormatException | IOException e) {
+                option = Integer.parseInt(br.nextLine());
+            } catch (NumberFormatException e) {
                 System.out.println("valor no válido");
             }
         } while (option < 1 || option > 7);
@@ -51,6 +49,7 @@ public class NBAMenu {
      * @return int
      */
     public int dataMenu() {
+        int option = 0;
         do {
             System.out.println(" \n*** Trabajar los Datos, escoge la tabla: *** \n");
             System.out.println("1. Jugadores");
@@ -63,8 +62,8 @@ public class NBAMenu {
             System.out.println("8. Atrás");
             System.out.println("Escoger opción: ");
             try {
-                option = Integer.parseInt(br.readLine());
-            } catch (NumberFormatException | IOException e) {
+                option = Integer.parseInt(br.nextLine());
+            } catch (NumberFormatException e) {
                 System.out.println("valor no válido");
                 e.printStackTrace();
 
@@ -80,18 +79,18 @@ public class NBAMenu {
      * @return Opción
      */
     public int hugeDataMenu() {
+        int option = 0;
         do {
             System.out.println("*** Quieres ver la información sobre... ***");
             System.out.println("1. Partidos");
             System.out.println("2. Temporadas");
             System.out.println("Escoger opción: ");
             try {
-                option = Integer.parseInt(br.readLine());
-            } catch (NumberFormatException | IOException e) {
+                option = Integer.parseInt(br.nextLine());
+            } catch (NumberFormatException e) {
                 System.out.println("valor no válido");
                 e.printStackTrace();
             }
-
         } while (option < 1 && option > 2);
         return option;
     }
