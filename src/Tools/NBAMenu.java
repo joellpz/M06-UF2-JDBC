@@ -60,6 +60,7 @@ public class NBAMenu {
             System.out.println("5. Equipos Por Temporada");
             System.out.println("6. Jugadores Por Temporada");
             System.out.println("7. Jugadores Por Partido");
+            System.out.println("8. Atrás");
             System.out.println("Escoger opción: ");
             try {
                 option = Integer.parseInt(br.readLine());
@@ -68,7 +69,7 @@ public class NBAMenu {
                 e.printStackTrace();
 
             }
-        } while (option < 1 && option > 7);
+        } while (option < 1 || option > 8);
 
         return option;
     }

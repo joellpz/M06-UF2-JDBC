@@ -116,7 +116,6 @@ public class NBAController {
                 table = "teams";
             }
             try {
-
                 String sql = "SELECT * FROM " + table + " WHERE " + getColName(table, column, colPosToCompare).get(0) + " = '" + valueToFind + "'";
                 ResultSet rs = st.executeQuery(sql);
                 while (rs.next()) {
@@ -129,6 +128,7 @@ public class NBAController {
             st.close();
         } catch (SQLException e) {
             System.out.println("¡¡ ERROR -> " + e);
+            System.out.println("** Alomejor el jugador no existe! **");
         }
         return null;
     }
@@ -260,8 +260,7 @@ public class NBAController {
             st.close();
 
             System.out.println(" *** INSERTADO *** ");
-        } catch (
-                SQLException e) {
+        } catch (SQLException e) {
             System.out.println("¡¡ ERROR -> " + e);
         }
     }
@@ -289,7 +288,7 @@ public class NBAController {
             );
             ResultSet rs = st.executeQuery(sqlBase);
             rs.last();
-            if (rs.getRow()==0){
+            if (rs.getRow() == 0) {
                 System.out.println(" ** NO se ha encontrado ningún resultado con tu búsqueda ** ");
             } else {
                 rs.beforeFirst();
@@ -330,7 +329,7 @@ public class NBAController {
             for (int i = 0; i < columns.size(); i++) {
                 System.out.println((i + 1) + ": " + columns.get(i));
             }
-            String columnToFind = columns.get(sc.nextInt());
+            String columnToFind = columns.get(sc.nextInt() - 1);
             sc.nextLine();
             System.out.println("*** Qué valor quieres buscar (se eliminaran todas las finals que contengan este valor): ***");
             String valueToFind = sc.nextLine();
@@ -381,12 +380,10 @@ public class NBAController {
                 if (updateColumn != null) {
                     column = updateColumn;
                 } else column = rsmd.getColumnName(i);
-
-                System.out.print(column);
-                switch (rsmd.getColumnType(i)) {
-                    case Types.INTEGER -> {
-                        do {
-                            rep = false;
+                try {
+                    System.out.print(column);
+                    switch (rsmd.getColumnType(i)) {
+                        case Types.INTEGER -> {
                             if (fk.contains(column) && !column.equals("idgame")) {
                                 List<String> val = getColName(column.substring(2) + "s", column, 2);
                                 System.out.print(" es una Foreign Key, introduce " + val.get(0) + " de la tabla " + val.get(1) + ": ");
@@ -394,39 +391,37 @@ public class NBAController {
                                 rs.updateInt(column, Integer.parseInt(getFKValue(column.substring(2) + "s", column, value, 2, 1)));
                             } else {
                                 System.out.print(" (integer): ");
-                                try {
-                                    rs.updateInt(column, Integer.parseInt(sc.nextLine()));
-                                } catch (Exception e) {
-                                    System.out.println("*** ERROR, introduce un número ***");
-                                    rep = true;
-                                }
+
+                                rs.updateInt(column, Integer.parseInt(sc.nextLine()));
                             }
+                        }
 
-                        } while (rep);
-                    }
+                        case Types.FLOAT, Types.REAL -> {
+                            System.out.print(" (float): ");
+                            rs.updateFloat(column, Float.parseFloat(sc.nextLine()));
 
-                    case Types.FLOAT, Types.REAL -> {
-                        System.out.print(" (float): ");
-                        rs.updateFloat(column, sc.nextFloat());
-                        sc.nextLine();
+                        }
+                        case Types.DATE -> {
+                            System.out.print(" (date yyyy-mm-dd): ");
+                            rs.updateDate(column, Date.valueOf(sc.nextLine()));
+                        }
+                        case Types.VARCHAR -> {
+                            if (column.equals("years")) System.out.println(" (Ex. 1990-91)");
+                            System.out.print(" (varchar): ");
+                            rs.updateString(column, sc.nextLine());
+                        }
+                        case Types.OTHER -> {
+                            //rs.updateObject(column, "'00:00:00'", Types.OTHER);
+                        }
                     }
-                    case Types.DATE -> {
-                        System.out.print(" (date yyyy-mm-dd): ");
-                        rs.updateDate(column, Date.valueOf(sc.nextLine()));
-                    }
-                    case Types.VARCHAR -> {
-                        System.out.print(" (varchar): ");
-                        rs.updateString(column, sc.nextLine());
-                    }
-                    case Types.OTHER -> {
-                        rs.updateObject(column, "00:00:00", Types.OTHER);
-                    }
+                } catch (Exception numException) {
+                    System.out.println("** !Error en el formato! **");
+                    i--;
                 }
             }
-        } catch (SQLException e) {
+        } catch (
+                SQLException e) {
             System.out.println("¡¡ ERROR -> " + e);
-        } catch (NumberFormatException numException) {
-            System.out.println("ERROR, al introducir el valor anterior");
         }
     }
 }
